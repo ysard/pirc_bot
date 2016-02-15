@@ -7,10 +7,26 @@ import logging
 
 # directory paths
 DIR_LOGS                = 'logs/'
+DIR_DATA                = 'data/'
 
 # Logging
 LOGGER_NAME             = info.PACKAGE_NAME
 LOG_LEVEL               = logging.DEBUG
+
+# IRC parameters
+SERVER_URL = "irc.freenode.net"
+SERVER_PORT = 6667
+BOT_NAME = "pirc_bt"
+BOT_REALNAME = "bt test"
+#CHANNEL = "#big_test"
+CHANNEL = "#big_rennes"
+
+# IRC events
+IRC_JOIN = 0
+IRC_QUIT = 1
+IRC_KICK = 2
+IRC_MSG  = 3
+
 
 
 ################################################################################
