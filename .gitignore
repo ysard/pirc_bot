@@ -1,0 +1,15 @@
+*.pyc
+.*.swp
+.*.swo
+*.*~
+*~
+__pycache__/
+.eric4project/
+.eric5project/
+Session.vim
+bin/
+include/
+lib/
+venv/
+pip-selfcheck.json
+logs/*
