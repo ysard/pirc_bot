@@ -26,7 +26,7 @@ from irc_bot import database as db
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route(cm.NGINX_PREFIX)
 def index():
     with db.SQLA_Wrapper() as session:
 
