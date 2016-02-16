@@ -14,14 +14,14 @@ from irc_bot.info import PACKAGE_VERSION  # , PACKAGE_NAME
 LOGGER = commons.logger()
 
 
-def start(args):
+def irc_bot_start(args):
     """Load the bot"""
     from irc_bot import connection
     param = args_to_param(args)
     connection.main(**param)
 
-def start_flask(args):
-    """Load flask app"""
+def start_flask_dev(args):
+    """Load flask app in dev environment"""
     from irc_bot import website
     param = args_to_param(args)
     website.main(**param)
@@ -41,13 +41,13 @@ class readable_dir(argparse.Action):
 
         if not os.path.isdir(prospective_dir):
             raise argparse.ArgumentTypeError(
-                    "readable_dir:{0} is not a valid path".format(prospective_dir))
+                "readable_dir:{0} is not a valid path".format(prospective_dir))
 
         if os.access(prospective_dir, os.R_OK):
             setattr(namespace, self.dest, prospective_dir)
         else:
             raise argparse.ArgumentTypeError(
-                    "readable_dir:{0} is not a readable dir".format(prospective_dir))
+                "readable_dir:{0} is not a readable dir".format(prospective_dir))
 
 
 
@@ -59,14 +59,14 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers(title='subcommands')
 
     # subparser: load ircbot
-    load_ircbot = subparsers.add_parser('start',
-                                        help=start.__doc__, )
-    load_ircbot.set_defaults(func=start)
+    load_ircbot = subparsers.add_parser('irc_bot_start',
+                                        help=irc_bot_start.__doc__, )
+    load_ircbot.set_defaults(func=irc_bot_start)
 
     # subparser: flask website
-    load_flask = subparsers.add_parser('start_flask',
-                                        help=start.__doc__, )
-    load_flask.set_defaults(func=start_flask)
+    load_flask = subparsers.add_parser('start_flask_dev',
+                                        help=start_flask_dev.__doc__, )
+    load_flask.set_defaults(func=start_flask_dev)
 
 
     # get program args and launch associated command
