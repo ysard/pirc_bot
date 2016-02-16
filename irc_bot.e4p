@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project irc_bot -->
-<!-- Saved: 2016-02-15, 12:37:16 -->
+<!-- Saved: 2016-02-16, 12:07:39 -->
 <!-- Copyright (C) 2016 ,  -->
 <Project version="5.1">
   <Language></Language>
@@ -12,6 +12,7 @@
   <Version>0.1</Version>
   <Author></Author>
   <Email></Email>
+  <Eol index="-1"/>
   <Sources>
     <Source>irc_bot/__main__.py</Source>
     <Source>irc_bot/__init__.py</Source>
@@ -19,6 +20,10 @@
     <Source>irc_bot/commons.py</Source>
     <Source>irc_bot/info.py</Source>
     <Source>irc_bot/connection.py</Source>
+    <Source>irc_bot/database.py</Source>
+    <Source>irc_bot/irc_bot.py</Source>
+    <Source>irc_bot/website/website.py</Source>
+    <Source>irc_bot/website/__init__.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
