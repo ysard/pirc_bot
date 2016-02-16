@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+This module handles the SQLite database with SQLAlchemy.
+The class Log is used to insert events in db.
+
+"""
 
 # Standard imports
 import datetime
+# https://docs.python.org/3.5/library/datetime.html
 import os
+from collections import Counter
+from operator import itemgetter
 
 # Custom imports
 from irc_bot import commons
@@ -107,6 +115,7 @@ def loading_sql(**kwargs):
 
 ################################################################################
 class Item():
+    """Some usefull methods to handle the objects in database"""
 
     @classmethod
     def get_number(cls, session):
@@ -138,11 +147,13 @@ class Item():
 
 
 class Log(Base, Item):
+    """Log class definition"""
 
     __tablename__ = 'log'
     id = Column(Integer, primary_key=True)
 
-    timestamp = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    # use utcnow to avoid timezones
+    timestamp = Column(DateTime, default=datetime.datetime.now, nullable=False)
     pseudo    = Column(String(50), nullable=False)
     event     = Column(Integer, nullable=False)
 
@@ -162,30 +173,106 @@ class Log(Base, Item):
         self.pseudo = pseudo
         self.event = event
 
-    def set_name(self, value):
-        assert (value in AUTH_STATUS), "Integrity error: Bad Status name"
-        self.name = value
-
     def __repr__(self):
         return "id:{}, timestamp:{}, pseudo:{}, event:{}".format(
-                    self.id,
-                    self.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                    self.pseudo,
-                    self.event)
+            self.id,
+            self.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            self.pseudo,
+            self.event)
+
+    @staticmethod
+    def get_day_messages(session):
+        """
+        """
+        # Beginning of today
+        d1 = datetime.datetime.now().replace(hour=0, minute=0, second=0)
+#        d1 = datetime.datetime.today()
+
+        # En of today
+        d2 = d1.replace(day=d1.day + 1)
+
+        query = session.query(Log).filter(Log.timestamp >= d1, Log.timestamp < d2)
+        results = [entity for entity in query]
+
+        print(len(results))
+
+        return results
+
+
+    @staticmethod
+    def get_week_messages(session):
+        """
+        """
+        # Today
+        d1 = datetime.datetime.today().replace(hour=0, minute=0, second=0)
+        # Current week
+        week_start = d1 - datetime.timedelta(days=d1.weekday())
+        week_end = week_start + datetime.timedelta(days=6)
+
+        query = session.query(Log).filter(Log.timestamp >= week_start, Log.timestamp < week_end)
+        results = [entity for entity in query]
+
+        print(len(results))
+
+        return results
+
+    @staticmethod
+    def get_messages_per_hour(logs):
+        """
+        """
+        unzip = lambda liste: [list(li) for li in zip(*liste)]
+
+        # Count messages by hours
+        all_messages_by_hours = Counter(log.timestamp.hour for log in logs)
+
+        # Complete hours with no data
+        # (previous data is not erased by this operation)
+        all_messages_by_hours.update({hour : 0 for hour in range(00,24)})
+
+        # Transform into classical dict for the sorted()
+        all_messages_by_hours = dict(all_messages_by_hours)
+
+        # Sort on day hours & return 2 lists [labels][values]
+        all_messages_by_hours = unzip(sorted(all_messages_by_hours.items(), key=itemgetter(0)))
+
+        print(all_messages_by_hours)
+        return all_messages_by_hours
+
+
+    @staticmethod
+    def get_top_posters(logs):
+        """
+
+        """
+        unzip = lambda liste: [list(li) for li in zip(*liste)]
+
+        # Sort the Counter on the n most common elements and their counts
+        all_posters =  unzip(Counter(log.pseudo for log in logs).most_common())
+        return all_posters
 
 
 if __name__ == "__main__":
 
+
     with SQLA_Wrapper() as session:
 
-        log = Log("test", 4)
+#        current_log = Log("test", 4)
+#
+#        # Add object to SQLite DB
+#        session.add(current_log)
+#        session.commit()
 
-        # Add object to SQLite DB
-        session.add(log)
-        session.commit()
 
-        print("Nb logs:", Log.get_number(session))
-        print("All logs:", session.query(Log).all())
+        Log.get_day_messages(session)
+        r = Log.get_week_messages(session)
+        Log.get_messages_per_hour(r)
+        exit()
+        r = Log.get_top_posters(r)
+        print(r)
+
+
+#        print("Nb logs:", Log.get_number(session))
+#        print("All logs:", session.query(Log).all())
 
 
 
