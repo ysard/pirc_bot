@@ -32,7 +32,7 @@ IRC_MSG  = 3
 # Nginx prefix in prod environment
 # empty string on dev environment
 NGINX_PREFIX = "/pirc_bot"
-NGINX_PREFIX = ""
+#NGINX_PREFIX = ""
 ################################################################################
 
 def logger(name=LOGGER_NAME, logfilename=None):
