@@ -183,17 +183,25 @@ class Log(Base, Item):
             self.event)
 
     @staticmethod
-    def get_day_messages(session):
+    def get_day_messages(session, previous=False):
         """Get all messages in the current day.
 
         :param arg1: SQLAlchemy session.
+        :param arg2: A boolean to retrieve messages
+            from the current or previous day.
         :type arg1: <SQL session object>
+        :type arg2: <boolean>
         :return: Lists of Log objects.
         :rtype: <list <Log>>
 
         """
         # Beginning of today
         d1 = datetime.datetime.now().replace(hour=0, minute=0, second=0)
+
+        # Is starting day the current or previous day ?
+        if previous == True:
+            d1 = d1.replace(day=d1.day - 1)
+
 #        d1 = datetime.datetime.today()
 
         # En of today
@@ -209,7 +217,7 @@ class Log(Base, Item):
 
 
     @staticmethod
-    def get_week_messages(session):
+    def get_week_messages(session, previous=False):
         """Get all messages in the current week.
 
         :param arg1: SQLAlchemy session.
@@ -220,6 +228,11 @@ class Log(Base, Item):
         """
         # Today
         d1 = datetime.datetime.today().replace(hour=0, minute=0, second=0)
+
+        # Is starting day the current or the day of the last week ?
+        if previous == True:
+            d1 = d1.replace(day=d1.day - 7) # sub 7 days
+
         # Current week
         week_start = d1 - datetime.timedelta(days=d1.weekday())
         week_end = week_start + datetime.timedelta(days=6)
@@ -291,8 +304,8 @@ if __name__ == "__main__":
 #        session.add(current_log)
 #        session.commit()
 
-
-        Log.get_day_messages(session)
+        print(Log.get_week_messages(session, previous=True))
+        Log.get_day_messages(session, previous=True)
         r = Log.get_week_messages(session)
         Log.get_messages_per_hour(r)
 

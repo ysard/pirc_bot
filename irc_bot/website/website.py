@@ -29,18 +29,12 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     with db.SQLA_Wrapper() as session:
-#
-        day_messages = db.Log.get_day_messages(session)
-        week_messages = db.Log.get_week_messages(session)
 
-        data_bar_day = db.Log.get_top_posters(day_messages)
-        data_bar_week = db.Log.get_top_posters(week_messages)
-        data_line_week = db.Log.get_messages_per_hour(week_messages)
+        prev_day_msgs = db.Log.get_day_messages(session, previous=True)
+        prev_week_msgs = db.Log.get_week_messages(session, previous=True)
+        day_msgs = db.Log.get_day_messages(session)
+        week_msgs = db.Log.get_week_messages(session)
 
-#        bar_data = db.Log.get_top_posters(r)
-    #bar_data = {'Plopp': 7, 'test': 2, 'DrIDK': 28, 'anon_bt': 2, 'Natir': 36, 'neolem': 1, 'Lou__': 1}
-#    labels = ['Natir', 'DrIDK', 'Plopp', 'test', 'anon_bt', 'Lou__', 'neolem']
-#    values = [36, 28, 7, 2, 2, 1, 1]
 
 #    data_bar_day = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
 #    data_bar_week = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
@@ -48,9 +42,11 @@ def index():
 
     return render_template('index.html',
                            nginx_prefix=cm.NGINX_PREFIX,
-                           data_bar_day=data_bar_day,
-                           data_bar_week=data_bar_week,
-                           data_line_week=data_line_week)
+                           data_bar_day=db.Log.get_top_posters(day_msgs),
+                           data_bar_prev_day=db.Log.get_top_posters(prev_day_msgs),
+                           data_bar_week=db.Log.get_top_posters(week_msgs),
+                           data_line_prev_week=db.Log.get_messages_per_hour(prev_week_msgs),
+                           data_line_week=db.Log.get_messages_per_hour(week_msgs))
 
 
 def main():
