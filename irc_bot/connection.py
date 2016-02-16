@@ -80,6 +80,10 @@ class IRCAnalytics(SingleServerIRCBot):
             LOGGER.info(self.get_current_date() + " - The bot <" + \
                      author + "> joined the channel <" + cm.CHANNEL + ">")
             #LOGGER.info("Users on the channel : " + str(",".join(users)))
+
+            # Send message on channel
+            serv.privmsg(self, ev.target, cm.BOT_MESSAGE)
+
             return
         LOGGER.debug(self.get_current_date() + " - <" + \
                      author + "> joined the channel")

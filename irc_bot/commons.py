@@ -16,7 +16,10 @@ LOG_LEVEL               = logging.DEBUG
 SERVER_URL = "irc.freenode.net"
 SERVER_PORT = 6667
 BOT_NAME = "pirc_bt"
-BOT_REALNAME = "bt test"
+BOT_REALNAME = "pirc bot " + info.PACKAGE_VERSION + \
+    " <http://pro-domo.ddns.net/pirc_bot>"
+BOT_MESSAGE = "#BIG Analytics " + info.PACKAGE_VERSION + \
+    " - http://pro-domo.ddns.net/pirc_bot"
 #CHANNEL = "#big_test"
 CHANNEL = "#big_rennes"
 
@@ -29,7 +32,7 @@ IRC_MSG  = 3
 # Nginx prefix in prod environment
 # empty string on dev environment
 NGINX_PREFIX = "/pirc_bot"
-
+NGINX_PREFIX = ""
 ################################################################################
 
 def logger(name=LOGGER_NAME, logfilename=None):
