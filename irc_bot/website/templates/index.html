@@ -164,6 +164,11 @@
             maintainAspectRatio: false,
             responsive: true
         };
+        
+        // TODO: Verify this position...
+        Chart.defaults.global.responsive = true;
+        Chart.defaults.global.maintainAspectRatio = false;
+
         // Get the context of the canvas element we want to select
         var bar_day_ctx = document.getElementById("bar_day").getContext("2d");
         var bar_prev_day_ctx = document.getElementById("bar_prev_day").getContext("2d");
@@ -181,12 +186,7 @@
         $("#bar_prev_day + span").html(bar_prev_day.generateLegend());
         $("#bar_week + span").html(bar_week.generateLegend());
         $("#line_week + span").html(line_week.generateLegend());
-        
-        
-        Chart.defaults.global.responsive = true;
-        Chart.defaults.global.maintainAspectRatio = false;
 
-        
     });
     </script>
     {% endblock %}
