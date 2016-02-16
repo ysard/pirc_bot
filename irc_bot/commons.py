@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from irc_bot      import info
 from logging.handlers   import RotatingFileHandler
-import logging
-
 
 # directory paths
 DIR_LOGS                = 'logs/'
