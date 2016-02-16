@@ -23,7 +23,7 @@ dev_flask_start:
 prod_flask_start:
 	if [ -e $(SOCKET_FILE) ]; then sudo rm $(SOCKET_FILE); fi
 	# Binding to nginx proxy via unix socket
-	gunicorn --timeout 12 --log-level=debug --workers 2 --bind unix:/tmp/irc_bot.sock -m 007 irc_bot.irc_bot:app & sudo chown www-data:www-data /tmp/irc_bot.sock
+	gunicorn --timeout 65 --log-level=debug --workers 1 --bind unix:/tmp/irc_bot.sock -m 007 irc_bot.irc_bot:app & sudo chown www-data:www-data /tmp/irc_bot.sock
 
 version:
 	$(COMMAND) --version
