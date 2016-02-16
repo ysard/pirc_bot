@@ -10,7 +10,7 @@ DIR_DATA                = 'data/'
 
 # Logging
 LOGGER_NAME             = info.PACKAGE_NAME
-LOG_LEVEL               = logging.DEBUG
+LOG_LEVEL               = logging.INFO
 
 # IRC parameters
 SERVER_URL = "irc.freenode.net"

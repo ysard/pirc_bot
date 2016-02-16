@@ -62,7 +62,7 @@ class IRCAnalytics(SingleServerIRCBot):
     def on_pubmsg(self, serv, ev):
         """Called when a user posts a message"""
         author = ev.source.nick
-        LOGGER.debug(self.get_current_date() + " - " + \
+        LOGGER.info(self.get_current_date() + " - " + \
                      author + " posted : " + str(*ev.arguments))
 
         # Insert in database
@@ -85,7 +85,8 @@ class IRCAnalytics(SingleServerIRCBot):
             serv.privmsg(ev.target, cm.BOT_MESSAGE)
 
             return
-        LOGGER.debug(self.get_current_date() + " - <" + \
+
+        LOGGER.info(self.get_current_date() + " - <" + \
                      author + "> joined the channel")
 
         # Insert in database
@@ -98,7 +99,7 @@ class IRCAnalytics(SingleServerIRCBot):
         # Filter the bot activity (on exit ??)
         if author == cm.BOT_NAME:
             return
-        LOGGER.debug(self.get_current_date() + " - <" + \
+        LOGGER.info(self.get_current_date() + " - <" + \
                      author + "> left the channel")
 
         # Insert in database

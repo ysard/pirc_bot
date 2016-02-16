@@ -256,18 +256,12 @@ class Log(Base, Item):
         :rtype: [[labels], [values]]
 
         """
-        unzip = lambda liste: [list(li) for li in zip(*liste)]
+        unzip = lambda liste: [tuple(li) for li in zip(*liste)]
 
-        # Count messages by hours
-        all_messages_by_hours = Counter(log.timestamp.hour for log in logs)
-
-        # Complete hours with no data
-        # (previous data is not erased by this operation)
-        all_messages_by_hours.update({hour : 0 for hour in range(00,24)})
-
-        # Transform into classical dict for the sorted()
-        all_messages_by_hours = dict(all_messages_by_hours)
-
+        # Initialize all hours of a day
+        all_messages_by_hours = Counter({hour : 0 for hour in range(00,24)})
+        # Update with data : Count messages by hours
+        all_messages_by_hours.update(log.timestamp.hour for log in logs)
         # Sort on day hours & return 2 lists [labels][values]
         all_messages_by_hours = unzip(sorted(all_messages_by_hours.items(),
                                              key=itemgetter(0)))
@@ -286,7 +280,7 @@ class Log(Base, Item):
         :rtype: [[labels], [values]]
 
         """
-        unzip = lambda liste: [list(li) for li in zip(*liste)]
+        unzip = lambda liste: [tuple(li) for li in zip(*liste)]
 
         # Sort the Counter on the n most common elements and their counts
         all_posters =  unzip(Counter(log.pseudo for log in logs).most_common())
@@ -307,8 +301,8 @@ if __name__ == "__main__":
         print(Log.get_week_messages(session, previous=True))
         Log.get_day_messages(session, previous=True)
         r = Log.get_week_messages(session)
-        Log.get_messages_per_hour(r)
-
+        print(Log.get_messages_per_hour(r))
+        exit()
         r = Log.get_top_posters(r)
         print(r)
 
