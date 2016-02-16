@@ -25,12 +25,15 @@ from irc_bot import database as db
 #Defaults to the 'static' folder in the root path of the application.
 
 app = Flask(__name__)
+# Initialize SQLAlchemy session (flask auto-removes the sssion later
 session = db.loading_sql()
 
 @app.route(cm.NGINX_PREFIX)
 def index():
-#    with db.SQLA_Wrapper() as session:
+    """Main page with graphs.
 
+    This func gets all data to be displayed on the html template
+    """
     prev_day_msgs = db.Log.get_day_messages(session, previous=True)
     prev_week_msgs = db.Log.get_week_messages(session, previous=True)
     day_msgs = db.Log.get_day_messages(session)
@@ -50,16 +53,17 @@ def index():
                            data_line_week=db.Log.get_messages_per_hour(week_msgs),
                            data_line_day=db.Log.get_messages_per_hour(day_msgs))
 
-    @app.teardown_appcontext
-    def shutdown_session(exception=None):
-        session.remove()
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    """Close the SQLAlchemy session => MAJOR IMPROVMENT !!!
+    http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/
+    """
+    session.remove()
+
 
 def main():
     app.run(debug=True)
-
-
-
-
 
 
 if __name__ == "__main__":
