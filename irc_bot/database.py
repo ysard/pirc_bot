@@ -164,6 +164,8 @@ class Log(Base, Item):
     def __init__(self, pseudo, event):
         """Constructor takes pseudo of the poster & the event type
 
+        ..note: timestamp is setup automatically
+
         :param arg1: Poster's pseudo
         :param arg2: Event's type
         :type arg1: <str>
@@ -182,7 +184,13 @@ class Log(Base, Item):
 
     @staticmethod
     def get_day_messages(session):
-        """
+        """Get all messages in the current day.
+
+        :param arg1: SQLAlchemy session.
+        :type arg1: <SQL session object>
+        :return: Lists of Log objects.
+        :rtype: <list <Log>>
+
         """
         # Beginning of today
         d1 = datetime.datetime.now().replace(hour=0, minute=0, second=0)
@@ -202,7 +210,13 @@ class Log(Base, Item):
 
     @staticmethod
     def get_week_messages(session):
-        """
+        """Get all messages in the current week.
+
+        :param arg1: SQLAlchemy session.
+        :type arg1: <SQL session object>
+        :return: Lists of Log objects.
+        :rtype: <list <Log>>
+
         """
         # Today
         d1 = datetime.datetime.today().replace(hour=0, minute=0, second=0)
@@ -218,9 +232,16 @@ class Log(Base, Item):
         LOGGER.debug("Messages per week : " + str(len(results)))
         return results
 
+
     @staticmethod
     def get_messages_per_hour(logs):
-        """
+        """Extracts number of messages per hour of the day from the log list.
+
+        :param: List of logs
+        :type: <list <Log>>
+        :return: Lists of hours & number of messages
+        :rtype: [[labels], [values]]
+
         """
         unzip = lambda liste: [list(li) for li in zip(*liste)]
 
@@ -244,7 +265,12 @@ class Log(Base, Item):
 
     @staticmethod
     def get_top_posters(logs):
-        """
+        """Extracts pseudo & number of messages from the log list.
+
+        :param: List of logs
+        :type: <list <Log>>
+        :return: Lists of labels & number of messages
+        :rtype: [[labels], [values]]
 
         """
         unzip = lambda liste: [list(li) for li in zip(*liste)]
