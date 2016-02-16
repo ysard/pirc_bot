@@ -23,7 +23,7 @@ prod_flask_start:
 	sudo rm /tmp/irc_bot.sock
 	#sudo chmod a+wx /tmp/irc_bot.sock
 	# Binding to nginx proxy via unix socket
-	gunicorn --user=www-data --group=www-data --log-level=debug --workers 1 --bind unix:/tmp/irc_bot.sock -m 007 irc_bot.irc_bot:app
+	gunicorn --user=www-data --group=www-data --timeout 12 --log-level=debug --workers 2 --bind unix:/tmp/irc_bot.sock -m 007 irc_bot.irc_bot:app
 
 version:
 	$(COMMAND) --version
