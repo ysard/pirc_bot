@@ -8,10 +8,10 @@
         
     {% block stylesheets %}
     {# On charge le CSS de bootstrap depuis le site directement #}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/styles.css') }}">
     <style>
         #bar_day {
             height: 400px;
@@ -58,9 +58,9 @@
 
     {% block javascript %} 
     {# Ajoutez ces lignes JavaScript si vous comptez vous servir des fonctionnalités du bootstrap Twitter #}
-    <script src="{{ url_for('static', filename='js/jquery-2.0.0.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
+    <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/jquery-2.0.0.min.js') }}"></script>
+    <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/Chart.min.js') }}"></script>
     <script>
     $(document).ready(function(){
     

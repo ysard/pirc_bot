@@ -26,7 +26,9 @@ IRC_QUIT = 1
 IRC_KICK = 2
 IRC_MSG  = 3
 
-
+# Nginx prefix in prod environment
+# empty string on dev environment
+NGINX_PREFIX = "/pirc_bot"
 
 ################################################################################
 
