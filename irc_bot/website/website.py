@@ -46,7 +46,8 @@ def index():
                            data_bar_prev_day=db.Log.get_top_posters(prev_day_msgs),
                            data_bar_week=db.Log.get_top_posters(week_msgs),
                            data_line_prev_week=db.Log.get_messages_per_hour(prev_week_msgs),
-                           data_line_week=db.Log.get_messages_per_hour(week_msgs))
+                           data_line_week=db.Log.get_messages_per_hour(week_msgs),
+                           data_line_day=db.Log.get_messages_per_hour(day_msgs))
 
 
 def main():
