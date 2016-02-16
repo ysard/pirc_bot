@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}#big_rennes stats{% endblock %}</title>
+        
+    {% block stylesheets %}
+    {# On charge le CSS de bootstrap depuis le site directement #}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        #bar_day {
+            height: 400px;
+        }
+    
+    
+    </style>
+    {% endblock %}
+</head>
+
+<body>
+    {% block header %}
+    <div id="header" class="page-header">
+        <div class="container">
+        <h1>{{ self.title() }}</h1>
+        </div>
+    </div>
+    {% endblock %}
+
+    <div class="container">
+        <div id="content">
+            <div class="row">
+
+                <div class="col-sm-6">
+                    <canvas id="bar_day" width="450px" height="400px"></canvas>
+                    <span></span>
+                </div>
+                <div class="col-sm-6">
+                    <canvas id="bar_week" width="450px" height="400px"></canvas>
+                    <span></span>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <canvas id="line_week" width="900px" height="450px"></canvas>
+                    <span></span>
+                </div>
+            
+            </div>
+        
+        </div>
+    </div>
+
+    {% block javascript %} 
+    {# Ajoutez ces lignes JavaScript si vous comptez vous servir des fonctionnalités du bootstrap Twitter #}
+    <script src="{{ url_for('static', filename='js/jquery-2.0.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/Chart.min.js') }}"></script>
+    <script>
+    $(document).ready(function(){
+    
+        var bar_day_data = {
+            labels : [
+                            {% for label in data_bar_day[0] %} "{{ label }}", {% endfor %}
+                     ],
+            datasets : [
+                {       
+                        label: "Posters of the day",
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                    data : [
+                                {% for value in data_bar_day[1] %} {{ value }}, {% endfor %}
+                           ]
+                }
+            ]
+        }
+        
+        var bar_week_data = {
+            labels : [
+                            {% for label in data_bar_week[0] %} "{{ label }}", {% endfor %}
+                     ],
+            datasets : [
+                {       
+                        label: "Posters of the week",
+                        fillColor: "rgba(151,187,205,0.2)",
+                        strokeColor: "rgba(151,187,205,1)",
+                        pointColor: "rgba(151,187,205,1)",
+                    data : [
+                                {% for value in data_bar_week[1] %} {{ value }}, {% endfor %}
+                           ]
+                }
+            ]
+        }
+        
+        var line_week_data = {
+            labels: [
+                        {% for label in data_line_week[0] %} "{{ label }}", {% endfor %}
+                    ],
+            datasets: [
+                {
+                    label: "Messages by hours on the week",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: [
+                                {% for value in data_line_week[1] %} {{ value }}, {% endfor %}
+                          ]
+                }
+            ]
+        };
+
+   
+        // Get the context of the canvas element we want to select
+        var bar_day_ctx = document.getElementById("bar_day").getContext("2d");
+        var bar_week_ctx = document.getElementById("bar_week").getContext("2d");
+        var line_week_ctx = document.getElementById("line_week").getContext("2d");
+        // This will get the first returned node in the jQuery collection.
+        
+        var bar_day = new Chart(bar_day_ctx).Bar(bar_day_data);
+        var bar_week = new Chart(bar_week_ctx).Bar(bar_week_data);
+        var line_week = new Chart(line_week_ctx).Line(line_week_data);
+        
+        
+        $("#bar_day + span").html(bar_day.generateLegend());
+        $("#bar_week + span").html(bar_week.generateLegend());
+        $("#line_week + span").html(line_week.generateLegend());
+        
+        
+        Chart.defaults.global.responsive = true;
+        Chart.defaults.global.maintainAspectRatio = false;
+
+        
+    });
+    </script>
+    {% endblock %}
+
+</body>
+</html> 

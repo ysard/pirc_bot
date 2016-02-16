@@ -20,6 +20,12 @@ def start(args):
     param = args_to_param(args)
     connection.main(**param)
 
+def start_flask(args):
+    """Load flask app"""
+    from irc_bot import website
+    param = args_to_param(args)
+    website.main(**param)
+
 def args_to_param(args):
     """Return argparse namespace as a dict {variable name: value}"""
     return {k: v for k, v in vars(args).items() if k != 'func'}
@@ -52,10 +58,16 @@ if __name__ == '__main__':
                         version='%(prog)s ' + PACKAGE_VERSION, )
     subparsers = parser.add_subparsers(title='subcommands')
 
-    # subparser: parse input_file
-    parser_pubmed = subparsers.add_parser('start',
-                                          help=start.__doc__, )
-    parser_pubmed.set_defaults(func=start)
+    # subparser: load ircbot
+    load_ircbot = subparsers.add_parser('start',
+                                        help=start.__doc__, )
+    load_ircbot.set_defaults(func=start)
+
+    # subparser: flask website
+    load_flask = subparsers.add_parser('start_flask',
+                                        help=start.__doc__, )
+    load_flask.set_defaults(func=start_flask)
+
 
     # get program args and launch associated command
     args = parser.parse_args()
