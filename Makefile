@@ -9,10 +9,10 @@ all:
 	$(COMMAND)
 	
 irc_start:
-	$(COMMAND) start
+	$(COMMAND) irc_bot_start
 
 dev_flask_start:
-	$(COMMAND) start_flask
+	$(COMMAND) start_flask_dev
 
 prod_flask_start:
 	# 2 workers, bind localhost:4000
