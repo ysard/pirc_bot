@@ -82,7 +82,7 @@ class IRCAnalytics(SingleServerIRCBot):
             #LOGGER.info("Users on the channel : " + str(",".join(users)))
 
             # Send message on channel
-            serv.privmsg(self, ev.target, cm.BOT_MESSAGE)
+            serv.privmsg(ev.target, cm.BOT_MESSAGE)
 
             return
         LOGGER.debug(self.get_current_date() + " - <" + \
