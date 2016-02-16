@@ -17,6 +17,8 @@ sys.path.append('../')
 from irc_bot import commons as cm
 from irc_bot import database as db
 
+LOGGER = cm.logger()
+
 #static_url_path :
 #can be used to specify a different path for the static files on the web.
 #Defaults to the name of the static_folder folder.
@@ -25,7 +27,7 @@ from irc_bot import database as db
 #Defaults to the 'static' folder in the root path of the application.
 
 app = Flask(__name__)
-# Initialize SQLAlchemy session (flask auto-removes the sssion later
+# Initialize SQLAlchemy session (flask auto-removes the session later
 session = db.loading_sql()
 
 @app.route(cm.NGINX_PREFIX)
@@ -58,7 +60,10 @@ def index():
 def shutdown_session(exception=None):
     """Close the SQLAlchemy session => MAJOR IMPROVMENT !!!
     http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/
+    PAY ATTENTION HERE:
+    http://stackoverflow.com/questions/21078696/why-is-my-scoped-session-raising-an-attributeerror-session-object-has-no-attr
     """
+    LOGGER.debug("SQLA : Closing session...")
     session.remove()
 
 

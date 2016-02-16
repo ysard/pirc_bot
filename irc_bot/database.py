@@ -47,7 +47,7 @@ class SQLA_Wrapper():
         :return: SQLAlchemy session.
         :rtype: <SQL session object>
         """
-        self._session = loading_sql(**self._kwargs)
+        self._session = loading_sql(**self._kwargs)()
         return self._session
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -109,9 +109,11 @@ def loading_sql(**kwargs):
     #all attribute/object access subsequent to a completed transaction
     #will load from the most recent database state.
 
-    Session = scoped_session(sessionmaker(bind=engine, autoflush=True))
-
-    return Session()
+    # PAY ATTENTION HERE:
+    # http://stackoverflow.com/questions/21078696/why-is-my-scoped-session-raising-an-attributeerror-session-object-has-no-attr
+    return scoped_session(sessionmaker(bind=engine, autoflush=True))
+#    Session =
+#    return Session()
 
 ################################################################################
 class Item():
