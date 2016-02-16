@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+This modules handles the IRC connection.
+The class IRCAnalytics is the heart of this program.
+It saves all events in database.
+"""
 
 # Standard imports
 import datetime
 from irc.bot import *
+# Tuto:
+# https://openclassrooms.com/courses/programmer-un-bot-irc-simplement-avec-ircbot
 
 # Custom imports
 from irc_bot import commons as cm
