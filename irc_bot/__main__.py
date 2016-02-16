@@ -24,6 +24,8 @@ def start_flask_dev(args):
     """Load flask app in dev environment"""
     from irc_bot import website
     param = args_to_param(args)
+    commons.NGINX_PREFIX = "/"
+    commons.STATIC_PREFIX = ""
     website.main(**param)
 
 def args_to_param(args):

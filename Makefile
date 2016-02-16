@@ -2,7 +2,7 @@ CMD_PYTHON=python3
 PYTHON=$(CMD_PYTHON) -m irc_bot
 SOCKET_FILE="/tmp/irc_bot.sock"
 #LOGLEVEL=--loglevel=debug
-LOGLEVEL=--loglevel=info
+#LOGLEVEL=--loglevel=info
 
 COMMAND=$(PYTHON) $(LOGLEVEL)
 
@@ -23,7 +23,8 @@ dev_flask_start:
 prod_flask_start:
 	if [ -e $(SOCKET_FILE) ]; then sudo rm $(SOCKET_FILE); fi
 	# Binding to nginx proxy via unix socket
-	gunicorn --timeout 65 --log-level=debug --workers 1 --bind unix:/tmp/irc_bot.sock -m 007 irc_bot.irc_bot:app & sudo chown www-data:www-data /tmp/irc_bot.sock
+	gunicorn --timeout 120 --log-level=debug --workers 1 --bind unix:/tmp/irc_bot.sock -m 007 irc_bot.irc_bot:app
+	#sudo chown www-data:www-data /tmp/irc_bot.sock
 
 version:
 	$(COMMAND) --version
