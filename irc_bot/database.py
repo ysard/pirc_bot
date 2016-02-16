@@ -191,11 +191,12 @@ class Log(Base, Item):
         # En of today
         d2 = d1.replace(day=d1.day + 1)
 
-        query = session.query(Log).filter(Log.timestamp >= d1, Log.timestamp < d2)
+        query = session.query(Log).filter(Log.timestamp >= d1,
+                                          Log.timestamp < d2,
+                                          Log.event == commons.IRC_MSG)
         results = [entity for entity in query]
 
-        print(len(results))
-
+        LOGGER.debug("Messages per day : " + str(len(results)))
         return results
 
 
@@ -209,11 +210,12 @@ class Log(Base, Item):
         week_start = d1 - datetime.timedelta(days=d1.weekday())
         week_end = week_start + datetime.timedelta(days=6)
 
-        query = session.query(Log).filter(Log.timestamp >= week_start, Log.timestamp < week_end)
+        query = session.query(Log).filter(Log.timestamp >= week_start,
+                                          Log.timestamp < week_end,
+                                          Log.event == commons.IRC_MSG)
         results = [entity for entity in query]
 
-        print(len(results))
-
+        LOGGER.debug("Messages per week : " + str(len(results)))
         return results
 
     @staticmethod
@@ -233,9 +235,10 @@ class Log(Base, Item):
         all_messages_by_hours = dict(all_messages_by_hours)
 
         # Sort on day hours & return 2 lists [labels][values]
-        all_messages_by_hours = unzip(sorted(all_messages_by_hours.items(), key=itemgetter(0)))
+        all_messages_by_hours = unzip(sorted(all_messages_by_hours.items(),
+                                             key=itemgetter(0)))
 
-        print(all_messages_by_hours)
+        LOGGER.debug("Messages per hour : " + str(all_messages_by_hours))
         return all_messages_by_hours
 
 
@@ -266,7 +269,7 @@ if __name__ == "__main__":
         Log.get_day_messages(session)
         r = Log.get_week_messages(session)
         Log.get_messages_per_hour(r)
-        exit()
+
         r = Log.get_top_posters(r)
         print(r)
 
