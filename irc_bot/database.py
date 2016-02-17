@@ -291,6 +291,7 @@ class Log(Base, Item):
         all_posters = unzip(Counter(log.pseudo for log in logs).most_common(15))
         return all_posters
 
+
     @staticmethod
     def get_average_msgs_per_day(logs):
         """Return a list of average messages per day

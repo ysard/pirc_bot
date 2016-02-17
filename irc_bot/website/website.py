@@ -47,14 +47,22 @@ def index():
 
     return render_template('index.html',
                            nginx_prefix=cm.STATIC_PREFIX,
-                           data_bar_day=db.Log.get_top_posters(day_msgs),
-                           data_bar_prev_day=db.Log.get_top_posters(prev_day_msgs),
-                           data_bar_week=db.Log.get_top_posters(week_msgs),
-                           data_line_prev_week=db.Log.get_messages_per_hour(prev_week_msgs),
-                           data_line_week=db.Log.get_messages_per_hour(week_msgs),
-                           data_line_prev_day=db.Log.get_messages_per_hour(prev_day_msgs),
-                           data_line_day=db.Log.get_messages_per_hour(day_msgs),
-                           data_average=db.Log.get_average_msgs_per_day(db.Log.get_all(session)))
+                           data_bar_day=db.Log.get_top_posters(
+                                day_msgs),
+                           data_bar_prev_day=db.Log.get_top_posters(
+                                prev_day_msgs),
+                           data_bar_week=db.Log.get_top_posters(
+                                week_msgs),
+                           data_line_prev_week=db.Log.get_messages_per_hour(
+                                prev_week_msgs),
+                           data_line_week=db.Log.get_messages_per_hour(
+                                week_msgs),
+                           data_line_prev_day=db.Log.get_messages_per_hour(
+                                prev_day_msgs),
+                           data_line_day=db.Log.get_messages_per_hour(
+                                day_msgs),
+                           data_average=db.Log.get_average_msgs_per_day(
+                                db.Log.get_all(session)))
 
 
 @app.teardown_appcontext
