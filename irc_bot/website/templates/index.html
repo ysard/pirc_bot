@@ -53,6 +53,10 @@
                     <canvas id="line_week" height="450px"></canvas>
                     <span></span>
             </div>
+            <div class="row">
+                    <canvas id="line_day" height="450px"></canvas>
+                    <span></span>
+            </div>
         
         </div>
     </div>
@@ -144,17 +148,37 @@
                     data: [
                                 {% for value in data_line_prev_week[1] %} {{ value }}, {% endfor %}
                           ]
-                },
+                }
+            ]
+        };
+        
+        var line_day_data = {
+            labels: [
+                        {% for label in data_line_week[0] %} "{{ label }}", {% endfor %}
+                    ],
+            datasets: [
                 {
                     label: "Messages by hours during the current day",
-                    fillColor: "rgba(51,153,51,0.2)",
-                    strokeColor: "rgba(51,153,51,1)",
-                    pointColor: "rgba(51,153,51,1)",
+                    fillColor: "rgba(251,51,0,,0.2)",
+                    strokeColor: "rgba(251,51,0,1)",
+                    pointColor: "rgba(251,51,0,1)",
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(51,153,51,1)",
+                    pointHighlightStroke: "rgba(251,51,0,1)",
                     data: [
                                 {% for value in data_line_day[1] %} {{ value }}, {% endfor %}
+                          ]
+                },
+                {
+                    label: "Messages by hours during the previous day",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: [
+                                {% for value in data_line_prev_day[1] %} {{ value }}, {% endfor %}
                           ]
                 }
             ]
@@ -174,18 +198,21 @@
         var bar_prev_day_ctx = document.getElementById("bar_prev_day").getContext("2d");
         var bar_week_ctx = document.getElementById("bar_week").getContext("2d");
         var line_week_ctx = document.getElementById("line_week").getContext("2d");
+        var line_day_ctx = document.getElementById("line_day").getContext("2d");
         // This will get the first returned node in the jQuery collection.
         
         var bar_day = new Chart(bar_day_ctx).Bar(bar_day_data, options);
         var bar_prev_day = new Chart(bar_prev_day_ctx).Bar(bar_prev_day_data, options);
         var bar_week = new Chart(bar_week_ctx).Bar(bar_week_data, options);
         var line_week = new Chart(line_week_ctx).Line(line_week_data, options);
+        var line_day = new Chart(line_day_ctx).Line(line_day_data, options);
         
         
         $("#bar_day + span").html(bar_day.generateLegend());
         $("#bar_prev_day + span").html(bar_prev_day.generateLegend());
         $("#bar_week + span").html(bar_week.generateLegend());
         $("#line_week + span").html(line_week.generateLegend());
+        $("#line_day + span").html(line_day.generateLegend());
 
     });
     </script>
