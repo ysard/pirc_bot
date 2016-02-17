@@ -184,6 +184,7 @@ class Log(Base, Item):
             self.pseudo,
             self.event)
 
+
     @staticmethod
     def get_day_messages(session, previous=False):
         """Get all messages in the current day.
@@ -276,6 +277,8 @@ class Log(Base, Item):
     def get_top_posters(logs):
         """Extracts pseudo & number of messages from the log list.
 
+        ..Note: 15 most common
+
         :param: List of logs
         :type: <list <Log>>
         :return: Lists of labels & number of messages
@@ -285,12 +288,43 @@ class Log(Base, Item):
         unzip = lambda liste: [tuple(li) for li in zip(*liste)]
 
         # Sort the Counter on the n most common elements and their counts
-        all_posters =  unzip(Counter(log.pseudo for log in logs).most_common())
+        all_posters = unzip(Counter(log.pseudo for log in logs).most_common(15))
         return all_posters
+
+    @staticmethod
+    def get_average_msgs_per_day(logs):
+        """Return a list of average messages per day
+        since the beginning of the logging
+
+        :param: List of logs
+        :type: <list <Log>>
+        :return: List of values.
+        :rtype: <list>
+
+        """
+
+        # Get number of unique days in db (weekday, day, month, year)
+        unique_days = {(log.timestamp.weekday(),
+                        log.timestamp.day,
+                        log.timestamp.month,
+                        log.timestamp.year) for log in logs}
+        # Count them
+        nb_unique_days = Counter(day for day, _, _, _ in unique_days)
+        LOGGER.debug("Number of unique days:" + str(nb_unique_days))
+
+        # Initialize all days of a week
+        all_messages_by_days = Counter({_ : 0 for _ in range(0,7)})
+        # Update with data : Count messages by days (0 to 6)
+        all_messages_by_days.update(log.timestamp.weekday() for log in logs)
+
+        # Extract an ordered list : each day and average messages
+        all_messages_by_days = \
+            [all_messages_by_days[day]/nb_unique_days.get(day, 1) for day in range(0,7)]
+
+        return all_messages_by_days
 
 
 if __name__ == "__main__":
-
 
     with SQLA_Wrapper() as session:
 
@@ -304,6 +338,8 @@ if __name__ == "__main__":
         Log.get_day_messages(session, previous=True)
         r = Log.get_week_messages(session)
         print(Log.get_messages_per_hour(r))
+
+        print(Log.get_average_msgs_per_day(Log.get_all(session)))
         exit()
         r = Log.get_top_posters(r)
         print(r)

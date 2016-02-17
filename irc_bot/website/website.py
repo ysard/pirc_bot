@@ -41,7 +41,6 @@ def index():
     day_msgs = db.Log.get_day_messages(session)
     week_msgs = db.Log.get_week_messages(session)
 
-
 #    data_bar_day = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
 #    data_bar_week = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
 #    data_line_week = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 74, 0, 0, 0, 0, 0, 0, 0]]
@@ -54,7 +53,8 @@ def index():
                            data_line_prev_week=db.Log.get_messages_per_hour(prev_week_msgs),
                            data_line_week=db.Log.get_messages_per_hour(week_msgs),
                            data_line_prev_day=db.Log.get_messages_per_hour(prev_day_msgs),
-                           data_line_day=db.Log.get_messages_per_hour(day_msgs))
+                           data_line_day=db.Log.get_messages_per_hour(day_msgs),
+                           data_average=db.Log.get_average_msgs_per_day(db.Log.get_all(session)))
 
 
 @app.teardown_appcontext
