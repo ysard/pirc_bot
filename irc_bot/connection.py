@@ -7,6 +7,7 @@ It saves all events in database.
 
 # Standard imports
 import datetime
+import re
 from irc.bot import *
 # Tuto:
 # https://openclassrooms.com/courses/programmer-un-bot-irc-simplement-avec-ircbot
@@ -36,6 +37,8 @@ class IRCAnalytics(SingleServerIRCBot):
 
         # Initialize database
         self._db_session = db.loading_sql()
+        # Init regex for names in conversation
+        self._expr_reg = re.compile('^(\w*): .*$')
 
     def get_current_date(self):
         """Return string with current date"""
@@ -64,6 +67,16 @@ class IRCAnalytics(SingleServerIRCBot):
         author = ev.source.nick
         LOGGER.info(self.get_current_date() + " - " + \
                      author + " posted : " + str(*ev.arguments))
+
+        match = self._expr_reg.match(ev.arguments[0])
+        if match is not None:
+            dest = match.groups()[0]
+            if dest in self.channels[ev.target].users():
+                LOGGER.info("Relation between <" + author + \
+                    "> and <" + dest + ">")
+
+                self._db_session.add(db.Edge(author, dest))
+                self._db_session.commit()
 
         # Insert in database
         self.insert_in_database(author, cm.IRC_MSG)

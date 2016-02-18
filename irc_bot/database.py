@@ -11,6 +11,7 @@ import datetime
 import os
 from collections import Counter
 from operator import itemgetter
+import itertools as it
 
 # Custom imports
 from irc_bot import commons
@@ -146,6 +147,83 @@ class Item():
 
         # Query for SQLite system
         return session.query(cls).all()
+
+
+class Edge(Base, Item):
+    """ """
+
+    __tablename__ = 'edge'
+    id = Column(Integer, primary_key=True)
+
+    # use utcnow to avoid timezones
+    timestamp = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    pseudo1   = Column(String(20), nullable=False)
+    pseudo2   = Column(String(20), nullable=False)
+
+    # Unicity constraint
+    # Note for MySQL, unicity & index is the same thing
+    Index('index_1', 'pesudo1', 'pseudo2', unique=True)
+
+    def __init__(self, pseudo1, pseudo2):
+        """Constructor takes pseudo of the poster & the event type
+
+        ..note: timestamp is setup automatically
+
+        :param arg1: Poster's pseudo
+        :param arg2: Event's type
+        :type arg1: <str>
+        :type arg2: <str>
+
+        """
+        # Lexicographic sort
+        self.pseudo1, self.pseudo2 = \
+            (pseudo1, pseudo2) if (pseudo1 < pseudo2) else (pseudo2, pseudo1)
+
+    def __repr__(self):
+        return "id:{}, timestamp:{}, pseudo1:{}, pseudo2:{}".format(
+            self.id,
+            self.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            self.pseudo1,
+            self.pseudo2)
+
+    @staticmethod
+    def get_nodes(edges):
+        """
+        """
+
+        g = ((edge.pseudo1, edge.pseudo2) for edge in edges)
+        g = it.chain(*g)
+
+        return Counter(node for node in g)
+
+    @staticmethod
+    def get_formatted_nodes(edges):
+        """
+        """
+        #{id: 1,  value: 2,  label: 'Algie' }
+        return ['{{id: {}, value: {},  label: \"{}\" }}'.format(i, cpl[1], cpl[0])
+            for i, cpl in enumerate(Edge.get_nodes(edges).items())]
+
+    @staticmethod
+    def get_formatted_edges(edges):
+        """
+        """
+
+        #{from: 2, to: 8, value: 3, title: '3 emails per week'}
+
+        all_nodes = Edge.get_nodes(edges)
+
+        all_nodes = {pseudo : id for id, pseudo in enumerate(all_nodes.keys())}
+        print(all_nodes)
+
+        all_edges = Counter((edge.pseudo1, edge.pseudo2) for edge in edges)
+        all_edges = [(all_nodes[pseudo1], all_nodes[pseudo2], all_edges[(pseudo1, pseudo2)])
+        for pseudo1, pseudo2 in all_edges.keys()]
+        print(all_edges)
+
+        return ['{{from: {}, to: {}, value: {}, title: \"{} messages\"}}'.format(pseudo1, pseudo2, weight, weight)
+            for pseudo1, pseudo2, weight in all_edges]
+
 
 
 class Log(Base, Item):
@@ -328,6 +406,20 @@ class Log(Base, Item):
 if __name__ == "__main__":
 
     with SQLA_Wrapper() as session:
+
+#        session.add(Edge("a", "b"))
+#        session.add(Edge("c", "d"))
+#        session.add(Edge("e", "f"))
+#        session.add(Edge("a", "c"))
+#        session.add(Edge("d", "e"))
+#        session.add(Edge("a", "f"))
+#        session.commit()
+#        exit()
+        print(Edge.get_nodes(Edge.get_all(session)))
+        print(Edge.get_formatted_nodes(Edge.get_all(session)))
+        print(Edge.get_formatted_edges(Edge.get_all(session)))
+        exit()
+
 
 #        current_log = Log("test", 4)
 #

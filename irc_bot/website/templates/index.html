@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/jquery-ui.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='dist/vis.min.css') }}">
     <style>
         #bar_day {
             height: 400px;
@@ -76,6 +77,10 @@
                     </table>
                 </div>
             </div>
+            
+            <div class="row">
+                <div id="mynetwork"></div>
+            </div>
         
         </div>
         
@@ -93,10 +98,12 @@
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/highcharts.js') }}"></script>
     {# // Highcharts #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/highcharts-3d.js') }}"></script>
-    {# // Theme #}
+        {# // Theme #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/themes/sand-signika.js') }}"></script>
-    {# // Export menu #}
+        {# // Export menu #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/modules/exporting.js') }}"></script>
+    {# // Vis.js #}
+    <script src="{{ nginx_prefix }}{{ url_for('static', filename='dist/vis.min.js') }}"></script>
     <script>
     $(document).ready(function(){
     
@@ -303,6 +310,37 @@
         });
 
         showValues();
+        
+        
+        ///////////////////////////////////////////////////////////////////////////////
+        var nodes = [
+            {% for value in data_nodes %} 
+                {{ value | safe }},
+            {% endfor %}
+        ];
+
+        var edges = [
+            {% for value in data_edges %}
+                {{ value | safe }},
+            {% endfor %}
+        ];
+
+        // Instantiate our network object.
+        var container = document.getElementById('mynetwork');
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+        var options = {
+            height: '600px',
+            nodes: {
+                shape: 'dot',
+            
+
+            }
+        };
+        var network = new vis.Network(container, data, options);
+
 
     });
     </script>

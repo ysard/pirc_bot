@@ -36,10 +36,11 @@ def index():
 
     This func gets all data to be displayed on the html template
     """
-    prev_day_msgs = db.Log.get_day_messages(session, previous=True)
+    prev_day_msgs  = db.Log.get_day_messages(session, previous=True)
     prev_week_msgs = db.Log.get_week_messages(session, previous=True)
-    day_msgs = db.Log.get_day_messages(session)
-    week_msgs = db.Log.get_week_messages(session)
+    day_msgs       = db.Log.get_day_messages(session)
+    week_msgs      = db.Log.get_week_messages(session)
+    edges          = db.Edge.get_all(session)
 
 #    data_bar_day = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
 #    data_bar_week = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
@@ -62,7 +63,10 @@ def index():
                            data_line_day=db.Log.get_messages_per_hour(
                                 day_msgs),
                            data_average=db.Log.get_average_msgs_per_day(
-                                db.Log.get_all(session)))
+                                db.Log.get_all(session)),
+                           data_nodes=db.Edge.get_formatted_nodes(edges),
+                           data_edges=db.Edge.get_formatted_edges(edges),
+                           )
 
 
 @app.teardown_appcontext
