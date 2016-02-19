@@ -38,7 +38,7 @@ class IRCAnalytics(SingleServerIRCBot):
         # Initialize database
         self._db_session = db.loading_sql()
         # Init regex for names in conversation
-        self._expr_reg = re.compile('^(\w*): .*$')
+        self._expr_reg = re.compile('^(\w*): (.*)$')
 
     def get_current_date(self):
         """Return string with current date"""
@@ -77,9 +77,14 @@ class IRCAnalytics(SingleServerIRCBot):
             # return on micro message
             if len(groups[1]) <= 3:
                 return
-            connected_users = self.channels[ev.target].users()
 
-            LOGGER.info("Connected users: " + str(connected_users))
+            # Verify if dest is a connected
+            connected_users = list(self.channels[ev.target].users())
+            LOGGER.debug("Connected users: " + str(connected_users))
+
+            if dest not in connected_users:
+                return
+
             LOGGER.info("Relation between <" + author + \
                 "> and <" + dest + ">")
 
