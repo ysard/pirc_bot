@@ -4,6 +4,8 @@ This module handles the SQLite database with SQLAlchemy.
 The class Log is used to insert events in db.
 
 """
+# Custom imports
+from irc_bot import commons
 
 # Standard imports
 import datetime
@@ -12,11 +14,9 @@ import os
 from collections import Counter
 from operator import itemgetter
 import itertools as it
-import pydotplus
-import networkx as nx
-
-# Custom imports
-from irc_bot import commons
+# Don't import networkx if flag is False
+if commons.USE_NETWORKX:
+    import networkx as nx
 
 # SQL Alchemy
 from sqlalchemy import *
@@ -226,12 +226,12 @@ class Edge(Base, Item):
         all_nodes = Edge.get_nodes(edges)
 
         all_nodes = {pseudo : id for id, pseudo in enumerate(all_nodes.keys())}
-        print(all_nodes)
+        #print(all_nodes)
 
         all_edges = Counter((edge.pseudo1, edge.pseudo2) for edge in edges)
         all_edges = [(all_nodes[pseudo1], all_nodes[pseudo2], all_edges[(pseudo1, pseudo2)])
             for pseudo1, pseudo2 in all_edges.keys()]
-        print(all_edges)
+        #print(all_edges)
 
         return ['{{from: {}, to: {}, value: {}, title: \"{} messages\"}}'.format(pseudo1, pseudo2, weight, weight)
             for pseudo1, pseudo2, weight in all_edges]

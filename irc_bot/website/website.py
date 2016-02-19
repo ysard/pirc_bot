@@ -46,26 +46,34 @@ def index():
 #    data_bar_week = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
 #    data_line_week = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 74, 0, 0, 0, 0, 0, 0, 0]]
 
-    return render_template('index.html',
-                           nginx_prefix=cm.STATIC_PREFIX,
-                           data_bar_day=db.Log.get_top_posters(
-                                day_msgs),
-                           data_bar_prev_day=db.Log.get_top_posters(
-                                prev_day_msgs),
-                           data_bar_week=db.Log.get_top_posters(
-                                week_msgs),
-                           data_line_prev_week=db.Log.get_messages_per_hour(
-                                prev_week_msgs),
-                           data_line_week=db.Log.get_messages_per_hour(
-                                week_msgs),
-                           data_line_prev_day=db.Log.get_messages_per_hour(
-                                prev_day_msgs),
-                           data_line_day=db.Log.get_messages_per_hour(
-                                day_msgs),
-                           data_average=db.Log.get_average_msgs_per_day(
-                                db.Log.get_all(session)),
-                           data_graph=db.Edge.get_graph(edges)
-                           )
+    params = {
+        'use_networkx' : cm.USE_NETWORKX, # USE NETWORKX OR NOT !
+        'nginx_prefix' : cm.STATIC_PREFIX,
+        'data_bar_day' : db.Log.get_top_posters(
+            day_msgs),
+        'data_bar_prev_day' : db.Log.get_top_posters(
+            prev_day_msgs),
+        'data_bar_week' : db.Log.get_top_posters(
+            week_msgs),
+        'data_line_prev_week' : db.Log.get_messages_per_hour(
+            prev_week_msgs),
+        'data_line_week' : db.Log.get_messages_per_hour(
+            week_msgs),
+        'data_line_prev_day' : db.Log.get_messages_per_hour(
+            prev_day_msgs),
+        'data_line_day' : db.Log.get_messages_per_hour(
+            day_msgs),
+        'data_average' : db.Log.get_average_msgs_per_day(
+            db.Log.get_all(session))
+    }
+
+    if cm.USE_NETWORKX:
+        params['data_graph'] = db.Edge.get_graph(edges)
+    else:
+        params['data_nodes'] = db.Edge.get_formatted_nodes(edges)
+        params['data_edges'] = db.Edge.get_formatted_edges(edges)
+
+    return render_template('index.html', **params)
 
 
 @app.teardown_appcontext

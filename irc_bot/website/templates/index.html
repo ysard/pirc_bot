@@ -118,7 +118,7 @@
             <div class="row">
                 <div id="mynetwork" class="col-sm-8"></div>
                 <span>Graph of relationships between posters</span>
-                <button class="btn btn-primary">Reset data/stabilize</button>
+                <button id="mynetwork_reset" class="btn btn-primary">Reset data/stabilize</button>
                 <button class="btn btn-primary" data-toggle="collapse" data-target="#config">Control panel</button>
                 <div id="config" class="collapse col-sm-4"></div>
             </div>
@@ -336,12 +336,23 @@
         
         // Vis.js /////////////////////////////////////////////////////////////
         // Vis DOC : http://visjs.org/docs/network/
-        // Load DOTString
+        
+        {% if use_networkx %}
+        // Load DOTString from networkx
+        // http://visjs.org/docs/network/#importing_data
         var parsedData = vis.network.convertDot('{{ data_graph | safe }}');
         var graph_data = {
             nodes: parsedData.nodes,
             edges: parsedData.edges
         };
+        {% else %}
+        // Load data manually generated
+        var graph_data = {
+            nodes: [ {% for value in data_nodes %} {{ value | safe }}, {% endfor %} ],
+            edges: [ {% for value in data_edges %} {{ value | safe }}, {% endfor %} ]
+        };
+        {% endif %}
+
         var options = {
             height: '600px',
             nodes: {
@@ -364,7 +375,7 @@
         // Instantiate our network object.
         var network = new vis.Network(document.getElementById('mynetwork'), graph_data, options);
         // SetData button / reset / restabilize
-        $('#mynetwork + button').click(function () {
+        $('#mynetwork_reset').click(function () {
             console.log('test');
             // Reload DOTString
             network.setData(graph_data);

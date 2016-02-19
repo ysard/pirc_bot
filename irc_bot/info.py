@@ -2,4 +2,4 @@
 
 
 PACKAGE_NAME = 'irc_bot'
-PACKAGE_VERSION = '0.8'
+PACKAGE_VERSION = '0.10'

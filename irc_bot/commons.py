@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from irc_bot      import info
-from logging.handlers   import RotatingFileHandler
+from irc_bot import info
+from logging.handlers import RotatingFileHandler
 
 # directory paths
 DIR_LOGS                = 'logs/'
 DIR_DATA                = 'data/'
+DIR_WEBSITE             = 'irc_bot/website/'
+DIR_W_STATIC            = DIR_WEBSITE + 'static/'
+DIR_W_TEMPLATES         = DIR_WEBSITE + 'templates/'
+
+# Import config:
+# Switch to True if you want to use Networkx.
+# PS: the import of this lib on Raspberry Pi is a real problem...
+USE_NETWORKX            = False
 
 # Logging
 LOGGER_NAME             = info.PACKAGE_NAME
@@ -20,7 +28,6 @@ BOT_REALNAME = "pirc bot " + info.PACKAGE_VERSION + \
     " <http://pro-domo.ddns.net/pirc_bot>"
 BOT_MESSAGE = "#BIG Analytics " + info.PACKAGE_VERSION + \
     " - http://pro-domo.ddns.net/pirc_bot"
-#CHANNEL = "#big_test"
 CHANNEL = "#big_rennes"
 
 # IRC events
