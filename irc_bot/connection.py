@@ -65,18 +65,28 @@ class IRCAnalytics(SingleServerIRCBot):
     def on_pubmsg(self, serv, ev):
         """Called when a user posts a message"""
         author = ev.source.nick
-        LOGGER.info(self.get_current_date() + " - " + \
-                     author + " posted : " + str(*ev.arguments))
+        message = ev.arguments[0]
 
-        match = self._expr_reg.match(ev.arguments[0])
-        if match is not None:
-            dest = match.groups()[0]
-            if dest in self.channels[ev.target].users():
-                LOGGER.info("Relation between <" + author + \
-                    "> and <" + dest + ">")
+        LOGGER.info(self.get_current_date() + " - <" + \
+                     author + "> : " + message)
 
-                self._db_session.add(db.Edge(author, dest))
-                self._db_session.commit()
+        try:
+            groups = self._expr_reg.match(message).groups()
+            dest = groups[0]
+
+            # return on micro message
+            if len(groups[1]) <= 3:
+                return
+            connected_users = self.channels[ev.target].users()
+
+            LOGGER.info("Connected users: " + str(connected_users))
+            LOGGER.info("Relation between <" + author + \
+                "> and <" + dest + ">")
+
+            self._db_session.add(db.Edge(author, dest))
+            self._db_session.commit()
+        except:
+            pass
 
         # Insert in database
         self.insert_in_database(author, cm.IRC_MSG)
