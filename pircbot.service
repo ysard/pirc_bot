@@ -8,7 +8,7 @@ PIDFile=/run/pircbot.pid
 Group=www-data
 WorkingDirectory=/project/directory
 Environment="PATH=/usr/local/bin"
-ExecStart=/usr/local/bin/gunicorn --timeout 10 --workers 1 --pid /run/pircbot.pid --bind unix:/run/pircbot.sock -m 007 irc_bot.irc_bot:app
+ExecStart=/usr/local/bin/gunicorn --timeout 13 --workers 1 --pid /run/pircbot.pid --bind unix:/run/pircbot.sock -m 007 irc_bot.irc_bot:app
 ExecReload=/bin/kill -s HUP $MAINPID 
 ExecStop=/bin/kill -s TERM $MAINPID 
 
