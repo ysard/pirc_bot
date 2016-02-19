@@ -212,7 +212,7 @@ class Edge(Base, Item):
         vis formatted nodes
         """
         #{id: 1,  value: 2,  label: 'Algie' }
-        return ['{{id: {}, value: {},  label: \"{}\" }}'.format(i, cpl[1], cpl[0])
+        return ['{{id: {}, value: {}, label: "{}", title: "{} message(s)"}}'.format(i, cpl[1], cpl[0], cpl[1])
             for i, cpl in enumerate(Edge.get_nodes(edges).items())]
 
     @staticmethod
@@ -233,7 +233,7 @@ class Edge(Base, Item):
             for pseudo1, pseudo2 in all_edges.keys()]
         #print(all_edges)
 
-        return ['{{from: {}, to: {}, value: {}, title: \"{} messages\"}}'.format(pseudo1, pseudo2, weight, weight)
+        return ['{{from: {}, to: {}, value: {}, title: "{} messages"}}'.format(pseudo1, pseudo2, weight, weight)
             for pseudo1, pseudo2, weight in all_edges]
 
     @staticmethod
@@ -267,12 +267,18 @@ class Edge(Base, Item):
         # PS: labels are always displayed on graph,
         # whereas titles are displayed on mouse hover.
         # PS2: to be resized, elements must have values value instead of weight.
-        [nx.set_edge_attributes(G, 'title', {edge : str(weight) + " message(s)"})
+        [nx.set_edge_attributes(G, 'title',
+                                {edge : str(weight) + " message(s)"})
             for edge, weight in nx.get_edge_attributes(G, 'weight').items()]
-        [nx.set_edge_attributes(G, 'value', {edge : weight})
+        [nx.set_edge_attributes(G, 'value',
+                                {edge : weight})
             for edge, weight in nx.get_edge_attributes(G, 'weight').items()]
         # Add weights on nodes
-        [nx.set_node_attributes(G, 'value', {node : all_nodes[node]})
+        [nx.set_node_attributes(G, 'value',
+                                {node : all_nodes[node]})
+            for node in G.nodes_iter()]
+        [nx.set_node_attributes(G, 'title',
+                                {node : str(all_nodes[node]) + " message(s)"})
             for node in G.nodes_iter()]
 
 #        print(nx.get_edge_attributes(G, 'weight'))
