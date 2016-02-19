@@ -12,6 +12,8 @@ import os
 from collections import Counter
 from operator import itemgetter
 import itertools as it
+import pydotplus
+import networkx as nx
 
 # Custom imports
 from irc_bot import commons
@@ -186,9 +188,17 @@ class Edge(Base, Item):
             self.pseudo1,
             self.pseudo2)
 
+
     @staticmethod
     def get_nodes(edges):
-        """
+        """Return a Counter of all nodes (aka user's pseudonyms).
+
+        Values are used to ressize nodes on graph.
+
+        :param: List of Edge.
+        :type: <list <Edge>>
+        :return: Counter of pseudonyms.
+        :rtype: <Counter <str> : <int>>
         """
 
         g = ((edge.pseudo1, edge.pseudo2) for edge in edges)
@@ -198,7 +208,8 @@ class Edge(Base, Item):
 
     @staticmethod
     def get_formatted_nodes(edges):
-        """
+        """/!\DEPRECATED/!\
+        vis formatted nodes
         """
         #{id: 1,  value: 2,  label: 'Algie' }
         return ['{{id: {}, value: {},  label: \"{}\" }}'.format(i, cpl[1], cpl[0])
@@ -206,7 +217,8 @@ class Edge(Base, Item):
 
     @staticmethod
     def get_formatted_edges(edges):
-        """
+        """/!\DEPRECATED/!\
+        vis formatted edges
         """
 
         #{from: 2, to: 8, value: 3, title: '3 emails per week'}
@@ -218,12 +230,60 @@ class Edge(Base, Item):
 
         all_edges = Counter((edge.pseudo1, edge.pseudo2) for edge in edges)
         all_edges = [(all_nodes[pseudo1], all_nodes[pseudo2], all_edges[(pseudo1, pseudo2)])
-        for pseudo1, pseudo2 in all_edges.keys()]
+            for pseudo1, pseudo2 in all_edges.keys()]
         print(all_edges)
 
         return ['{{from: {}, to: {}, value: {}, title: \"{} messages\"}}'.format(pseudo1, pseudo2, weight, weight)
             for pseudo1, pseudo2, weight in all_edges]
 
+    @staticmethod
+    def get_graph(edges):
+        """Return a relation graph in dot format according to the given Edges.
+
+        ..Note: The returned string could be displayed in Jinja,
+            with 'text | safe' filter.
+
+        ..Note: Colormap & degrees:
+        https://networkx.github.io/documentation/latest/examples/drawing/node_colormap.html
+        http://matplotlib.org/users/colormaps.html
+
+        :param: List of Edge.
+        :type: <list <Edge>>
+        :return: dot string ready to be used.
+        :rtype: <str>
+        """
+
+        # Counter of pseudos
+        all_nodes = Edge.get_nodes(edges)
+        # Counter of edges
+        all_edges = Counter((edge.pseudo1, edge.pseudo2) for edge in edges)
+
+        # Add nodes automatically by adding weighted edges directly
+        # Problem : this creates weight attribute but Vis uses value attribute..
+        G = nx.Graph()
+        G.add_weighted_edges_from([(e[0], e[1], all_edges[e]) for e in all_edges])
+
+        # Set edges titles (according to weights)
+        # PS: labels are always displayed on graph,
+        # whereas titles are displayed on mouse hover.
+        # PS2: to be resized, elements must have values value instead of weight.
+        [nx.set_edge_attributes(G, 'title', {edge : str(weight) + " message(s)"})
+            for edge, weight in nx.get_edge_attributes(G, 'weight').items()]
+        [nx.set_edge_attributes(G, 'value', {edge : weight})
+            for edge, weight in nx.get_edge_attributes(G, 'weight').items()]
+        # Add weights on nodes
+        [nx.set_node_attributes(G, 'value', {node : all_nodes[node]})
+            for node in G.nodes_iter()]
+
+#        print(nx.get_edge_attributes(G, 'weight'))
+#        print(nx.get_edge_attributes(G, 'label'))
+#        print(nx.get_node_attributes(G, 'weight'))
+
+        # Write into file => ULGYYY
+        # https://networkx.github.io/documentation/latest/_modules/networkx/drawing/nx_pydot.html
+        # Save dot file
+#        nx.drawing.nx_pydot.write_dot(G, "test.dot")
+        return nx.drawing.nx_pydot.to_pydot(G).to_string().replace('\n', ' ')
 
 
 class Log(Base, Item):
@@ -418,6 +478,7 @@ if __name__ == "__main__":
         print(Edge.get_nodes(Edge.get_all(session)))
         print(Edge.get_formatted_nodes(Edge.get_all(session)))
         print(Edge.get_formatted_edges(Edge.get_all(session)))
+        print(Edge.get_graph(Edge.get_all(session)))
         exit()
 
 
