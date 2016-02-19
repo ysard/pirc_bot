@@ -64,8 +64,7 @@ def index():
                                 day_msgs),
                            data_average=db.Log.get_average_msgs_per_day(
                                 db.Log.get_all(session)),
-                           data_nodes=db.Edge.get_formatted_nodes(edges),
-                           data_edges=db.Edge.get_formatted_edges(edges),
+                           data_graph=db.Edge.get_graph(edges)
                            )
 
 

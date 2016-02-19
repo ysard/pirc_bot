@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}#big_rennes stats{% endblock %}</title>
+    <title>{% block title %}#big_rennes awesome stats{% endblock %}</title>
         
     {% block stylesheets %}
     {# On charge le CSS de bootstrap depuis le site directement #}
@@ -12,10 +12,33 @@
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/jquery-ui.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='css/styles.css') }}">
+    {# Vis.js #}
     <link rel="stylesheet" type="text/css" href="{{ nginx_prefix }}{{ url_for('static', filename='dist/vis.min.css') }}">
     <style>
+        #toTop{
+            position: fixed;
+            bottom: 95px;
+            right: 40px;
+            cursor: pointer;
+        }
+        #toTop .fa {margin-right: 5px;}
+
         #bar_day {
             height: 400px;
+        }
+        
+        #mynetwork {
+            border: 1px solid rgba(100,100,100,0.5);
+        }
+        /* config panel */
+        .vis-config-rangeinput {
+            display: none;
+        }
+        div.vis-configuration.vis-config-item.vis-config-s2 {
+            background-color: transparent;
+        }
+        div.vis-configuration.vis-config-item.vis-config-s3 {
+            background-color: transparent;
         }
     
     
@@ -31,11 +54,23 @@
         </div>
     </div>
     {% endblock %}
+    
+    <div class="container">
+        <ul class="nav nav-pills nav-justified" role="tablist">
+            <li><a href="#">Bar plots</a></li>
+            <li><a href="#line_week">Messages during weeks</a></li>
+            <li><a href="#line_day">Messages during days</a></li>
+            <li><a href="#data_average">Number of messages per day during current week</a></li>
+            <li><a href="#mynetwork">Graph of relationships</a></li>
+        </ul>
+    </div>
 
+    <br>
+    <a href="#" id="toTop" class="btn btn-primary">Back to Top</a>
+    
     <div class="container">
         <div id="content">
             <div class="row">
-
                 <div class="col-sm-4">
                     <canvas id="bar_day" height="400"></canvas>
                     <span></span>
@@ -48,27 +83,29 @@
                     <canvas id="bar_week" height="400"></canvas>
                     <span></span>
                 </div>
-
             </div>
+            
             <div class="row">
-                    <canvas id="line_week" height="440"></canvas>
-                    <span></span>
+                <canvas id="line_week" height="440"></canvas>
+                <span></span>
             </div>
+            
             <div class="row">
-                    <canvas id="line_day" height="440"></canvas>
-                    <span></span>
+                <canvas id="line_day" height="440"></canvas>
+                <span></span>
             </div>
+            
             <div class="row">
-                <div id="data_average"></div>
-                <div id="sliders">
+                <div id="data_average" class="col-sm-10"></div>
+                <div id="sliders" class="col-sm-2">
                     <table>
                         <tr>
                             <td>Alpha Angle</td>
-                            <td><input id="alpha" type="range" min="0" max="45" value="15"/> <span id="alpha-value" class="value"></span></td>
+                            <td><input id="alpha" type="range" min="0" max="90" value="15"/> <span id="alpha-value" class="value"></span></td>
                         </tr>
                         <tr>
                             <td>Beta Angle</td>
-                            <td><input id="beta" type="range" min="0" max="45" value="15"/> <span id="beta-value" class="value"></span></td>
+                            <td><input id="beta" type="range" min="0" max="90" value="15"/> <span id="beta-value" class="value"></span></td>
                         </tr>
                         <tr>
                             <td>Depth</td>
@@ -79,7 +116,11 @@
             </div>
             
             <div class="row">
-                <div id="mynetwork"></div>
+                <div id="mynetwork" class="col-sm-8"></div>
+                <span>Graph of relationships between posters</span>
+                <button class="btn btn-primary">Reset data/stabilize</button>
+                <button class="btn btn-primary" data-toggle="collapse" data-target="#config">Control panel</button>
+                <div id="config" class="collapse col-sm-4"></div>
             </div>
         
         </div>
@@ -96,72 +137,58 @@
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/Chart.min.js') }}"></script>
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/highcharts.js') }}"></script>
-    {# // Highcharts #}
+    {# Highcharts #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/highcharts-3d.js') }}"></script>
-        {# // Theme #}
+        {# Theme #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/themes/sand-signika.js') }}"></script>
-        {# // Export menu #}
+        {# Export menu #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='js/modules/exporting.js') }}"></script>
-    {# // Vis.js #}
+    {# Vis.js #}
     <script src="{{ nginx_prefix }}{{ url_for('static', filename='dist/vis.min.js') }}"></script>
     <script>
     $(document).ready(function(){
-    
+        // Chart.js graphics //////////////////////////////////////////////////
         var bar_day_data = {
-            labels : [
-                            {% for label in data_bar_day[0] %} "{{ label }}", {% endfor %}
-                     ],
+            labels : [ {% for label in data_bar_day[0] %} "{{ label }}", {% endfor %} ],
             datasets : [
                 {       
                     label: "Wankers of the day",
                     fillColor: "rgba(151,187,205,0.2)",
                     strokeColor: "rgba(151,187,205,1)",
                     pointColor: "rgba(151,187,205,1)",
-                        data : [
-                                    {% for value in data_bar_day[1] %} {{ value }}, {% endfor %}
-                               ]
+                        data : [ {% for value in data_bar_day[1] %} {{ value }}, {% endfor %} ]
                 }
             ]
         }
         
         var bar_prev_day_data = {
-            labels : [
-                            {% for label in data_bar_prev_day[0] %} "{{ label }}", {% endfor %}
-                     ],
+            labels : [ {% for label in data_bar_prev_day[0] %} "{{ label }}", {% endfor %} ],
             datasets : [
                 {       
                     label: "Wankers of the previous day",
                     fillColor: "rgba(151,187,205,0.2)",
                     strokeColor: "rgba(151,187,205,1)",
                     pointColor: "rgba(151,187,205,1)",
-                        data : [
-                                    {% for value in data_bar_prev_day[1] %} {{ value }}, {% endfor %}
-                               ]
+                        data : [ {% for value in data_bar_prev_day[1] %} {{ value }}, {% endfor %} ]
                 }
             ]
         }
         
         var bar_week_data = {
-            labels : [
-                            {% for label in data_bar_week[0] %} "{{ label }}", {% endfor %}
-                     ],
+            labels : [ {% for label in data_bar_week[0] %} "{{ label }}", {% endfor %} ],
             datasets : [
                 {       
                         label: "Wankers of the week",
                         fillColor: "rgba(151,187,205,0.2)",
                         strokeColor: "rgba(151,187,205,1)",
                         pointColor: "rgba(151,187,205,1)",
-                    data : [
-                                {% for value in data_bar_week[1] %} {{ value }}, {% endfor %}
-                           ]
+                    data : [ {% for value in data_bar_week[1] %} {{ value }}, {% endfor %} ]
                 }
             ]
         }
         
         var line_week_data = {
-            labels: [
-                        {% for label in data_line_week[0] %} "{{ label }}h", {% endfor %}
-                    ],
+            labels: [ {% for label in data_line_week[0] %} "{{ label }}h", {% endfor %} ],
             datasets: [
                 {
                     label: "Messages by hours during the current week",
@@ -171,9 +198,7 @@
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(251,51,0,1)",
-                    data: [
-                                {% for value in data_line_week[1] %} {{ value }}, {% endfor %}
-                          ]
+                    data: [ {% for value in data_line_week[1] %} {{ value }}, {% endfor %} ]
                 },
                 {
                     label: "Messages by hours during the previous week",
@@ -183,17 +208,13 @@
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: [
-                                {% for value in data_line_prev_week[1] %} {{ value }}, {% endfor %}
-                          ]
+                    data: [ {% for value in data_line_prev_week[1] %} {{ value }}, {% endfor %} ]
                 }
             ]
         };
         
         var line_day_data = {
-            labels: [
-                        {% for label in data_line_week[0] %} "{{ label }}h", {% endfor %}
-                    ],
+            labels: [ {% for label in data_line_week[0] %} "{{ label }}h", {% endfor %} ],
             datasets: [
                 {
                     label: "Messages by hours during the current day",
@@ -203,9 +224,7 @@
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(251,51,0,1)",
-                    data: [
-                                {% for value in data_line_day[1] %} {{ value }}, {% endfor %}
-                          ]
+                    data: [ {% for value in data_line_day[1] %} {{ value }}, {% endfor %} ]
                 },
                 {
                     label: "Messages by hours during the previous day",
@@ -215,13 +234,12 @@
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: [
-                                {% for value in data_line_prev_day[1] %} {{ value }}, {% endfor %}
-                          ]
+                    data: [ {% for value in data_line_prev_day[1] %} {{ value }}, {% endfor %} ]
                 }
             ]
         };
 
+        // Chart.js config
         var options = {
             maintainAspectRatio: false,
             responsive: true
@@ -252,7 +270,7 @@
         $("#line_week + span").html(line_week.generateLegend());
         $("#line_day + span").html(line_day.generateLegend());
         
-        ////////////////////////////////////////////////////////////////////////////////////////
+        // Highchats.js ///////////////////////////////////////////////////////
         // API: http://api.highcharts.com/highcharts
         var chart = new Highcharts.Chart({
             chart: {
@@ -265,9 +283,9 @@
                     beta: 25,
                     depth: 70,
                     viewDistance: 25,
-                    zoomType: 'x',
+                    /*zoomType: 'x',
                     panning: true,
-                    panKey: 'shift' // Activate zoom
+                    panKey: 'shift' // Activate zoom*/
                 }
             },
             title: {
@@ -282,7 +300,8 @@
                 }
             },
             xAxis: {
-                categories: Highcharts.getOptions().lang.weekdays
+                categories: [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                //Highcharts.getOptions().lang.weekdays
             },
             yAxis: {
                 title: {
@@ -296,6 +315,8 @@
             }]
         });
         
+        // Config panel with sliders
+        // Display values
         function showValues() {
             $('#alpha-value').html(chart.options.chart.options3d.alpha);
             $('#beta-value').html(chart.options.chart.options3d.beta);
@@ -308,38 +329,51 @@
             showValues();
             chart.redraw(false);
         });
-
+        
+        // Display current values
         showValues();
         
         
-        ///////////////////////////////////////////////////////////////////////////////
-        var nodes = [
-            {% for value in data_nodes %} 
-                {{ value | safe }},
-            {% endfor %}
-        ];
-
-        var edges = [
-            {% for value in data_edges %}
-                {{ value | safe }},
-            {% endfor %}
-        ];
-
-        // Instantiate our network object.
-        var container = document.getElementById('mynetwork');
-        var data = {
-            nodes: nodes,
-            edges: edges
+        // Vis.js /////////////////////////////////////////////////////////////
+        // Vis DOC : http://visjs.org/docs/network/
+        // Load DOTString
+        var parsedData = vis.network.convertDot('{{ data_graph | safe }}');
+        var graph_data = {
+            nodes: parsedData.nodes,
+            edges: parsedData.edges
         };
         var options = {
             height: '600px',
             nodes: {
                 shape: 'dot',
-            
-
+            },
+            // Config panel
+            configure: {
+                filter:function (option, path) {
+                    if (path.indexOf('physics') !== -1) {
+                    return true;
+                    }
+                    if (path.indexOf('smooth') !== -1 || option === 'smooth') {
+                    return true;
+                    }
+                    return false;
+                },
+                container: document.getElementById('config')
             }
         };
-        var network = new vis.Network(container, data, options);
+        // Instantiate our network object.
+        var network = new vis.Network(document.getElementById('mynetwork'), graph_data, options);
+        // SetData button / reset / restabilize
+        $('#mynetwork + button').click(function () {
+            console.log('test');
+            // Reload DOTString
+            network.setData(graph_data);
+            // Reduce forces
+            network.stabilize();
+        });
+
+        
+        
 
 
     });
