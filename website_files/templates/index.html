@@ -51,7 +51,7 @@
     {% block header %}
     <div id="header" class="page-header">
         <div class="container">
-        <h1>{{ self.title() }}</h1>
+        <h1>{{ self.title() }} - Server n°2</h1>
         </div>
     </div>
     {% endblock %}
@@ -338,7 +338,6 @@
         // Vis.js /////////////////////////////////////////////////////////////
         // Vis DOC : http://visjs.org/docs/network/
         
-        {% if use_networkx %}
         // Load DOTString from networkx
         // http://visjs.org/docs/network/#importing_data
         var parsedData = vis.network.convertDot('{{ data_graph | safe }}');
@@ -346,18 +345,16 @@
             nodes: parsedData.nodes,
             edges: parsedData.edges
         };
-        {% else %}
-        // Load data manually generated
-        var graph_data = {
-            nodes: [ {% for value in data_nodes %} {{ value | safe }}, {% endfor %} ],
-            edges: [ {% for value in data_edges %} {{ value | safe }}, {% endfor %} ]
-        };
-        {% endif %}
-
+        
         var options = {
             height: '600px',
             nodes: {
                 shape: 'dot',
+            },
+            "physics": {
+                "barnesHut": {
+                "gravitationalConstant": -6900
+                },
             },
             // Config panel
             configure: {

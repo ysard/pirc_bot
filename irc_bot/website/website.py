@@ -10,8 +10,6 @@ http://www.chartjs.org/docs
 
 # Standard imports
 from flask import Flask, render_template
-import sys
-sys.path.append('../')
 
 # Custom imports
 from irc_bot import commons as cm
@@ -26,7 +24,9 @@ LOGGER = cm.logger()
 #the folder with static files that should be served at static_url_path.
 #Defaults to the 'static' folder in the root path of the application.
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder='../../' + cm.DIR_W_STATIC,
+            template_folder='../../' + cm.DIR_W_TEMPLATES)
 # Initialize SQLAlchemy session (flask auto-removes the session later
 session = db.loading_sql()
 
@@ -35,19 +35,21 @@ def index():
     """Main page with graphs.
 
     This func gets all data to be displayed on the html template
+
+    Examples of data:
+    data_bar_day = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
+    data_bar_week = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
+    data_line_week = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 74, 0, 0, 0, 0, 0, 0, 0]]
+
     """
+
     prev_day_msgs  = db.Log.get_day_messages(session, previous=True)
     prev_week_msgs = db.Log.get_week_messages(session, previous=True)
     day_msgs       = db.Log.get_day_messages(session)
     week_msgs      = db.Log.get_week_messages(session)
     edges          = db.Edge.get_all(session)
 
-#    data_bar_day = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
-#    data_bar_week = [['Natir', 'DrIDK', 'Plopp', 'anon_bt', 'test', 'neolem', 'Lou__'], [36, 28, 7, 2, 2, 1, 1]]
-#    data_line_week = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 74, 0, 0, 0, 0, 0, 0, 0]]
-
     params = {
-        'use_networkx' : cm.USE_NETWORKX, # USE NETWORKX OR NOT !
         'nginx_prefix' : cm.STATIC_PREFIX,
         'data_bar_day' : db.Log.get_top_posters(
             day_msgs),
@@ -64,14 +66,9 @@ def index():
         'data_line_day' : db.Log.get_messages_per_hour(
             day_msgs),
         'data_average' : db.Log.get_average_msgs_per_day(
-            db.Log.get_all(session))
+            db.Log.get_all(session)),
+        'data_graph' : db.Edge.get_graph(edges)
     }
-
-    if cm.USE_NETWORKX:
-        params['data_graph'] = db.Edge.get_graph(edges)
-    else:
-        params['data_nodes'] = db.Edge.get_formatted_nodes(edges)
-        params['data_edges'] = db.Edge.get_formatted_edges(edges)
 
     return render_template('index.html', **params)
 

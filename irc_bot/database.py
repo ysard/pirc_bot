@@ -195,7 +195,7 @@ class Edge(Base, Item):
 
         Values are used to ressize nodes on graph.
 
-        :param: List of Edge.
+        :param: List of Edges.
         :type: <list <Edge>>
         :return: Counter of pseudonyms.
         :rtype: <Counter <str> : <int>>
@@ -208,37 +208,49 @@ class Edge(Base, Item):
 
     @staticmethod
     def get_formatted_nodes(edges):
-        """/!\DEPRECATED/!\
-        vis formatted nodes
+        """Used to format nodes in DOT format.
+
+        ..Note: Protection of node names with quotes "" => avoid curious
+            things with composite names
+
+        :param: List of Edges.
+        :type: <list <Edge>>
+        :return: DOT nodes.
+        :rtype: <str>
         """
-        #{id: 1,  value: 2,  label: 'Algie' }
-        return ['{{id: {}, value: {}, label: "{}", title: "{} message(s)"}}'.format(i, cpl[1], cpl[0], cpl[1])
-            for i, cpl in enumerate(Edge.get_nodes(edges).items())]
+
+        # chaman_gitan [value=51, title="3 message(s)"];
+        return ['"{}" [value={}, title="{} message(s)"];'.format(pseudo,
+                                                               value,
+                                                               value)
+            for pseudo, value in Edge.get_nodes(edges).items()]
 
     @staticmethod
     def get_formatted_edges(edges):
-        """/!\DEPRECATED/!\
-        vis formatted edges
+        """Used to format edges in DOT format.
+
+        ..Note: Protection of node names with quotes "" => avoid curious
+            things with composite names
+
+        :param: List of Edges.
+        :type: <list <Edge>>
+        :return: DOT edges.
+        :rtype: <str>
         """
 
-        #{from: 2, to: 8, value: 3, title: '3 emails per week'}
-
-        all_nodes = Edge.get_nodes(edges)
-
-        all_nodes = {pseudo : id for id, pseudo in enumerate(all_nodes.keys())}
-        #print(all_nodes)
-
+        # neolem -- gentilbot397  [title="7 message(s)", value=7];
         all_edges = Counter((edge.pseudo1, edge.pseudo2) for edge in edges)
-        all_edges = [(all_nodes[pseudo1], all_nodes[pseudo2], all_edges[(pseudo1, pseudo2)])
+        return ['"{}" -- "{}" [value={}, title="{} message(s)"];'.format(pseudo1,
+                                                                     pseudo2,
+                                                                     all_edges[(pseudo1, pseudo2)],
+                                                                     all_edges[(pseudo1, pseudo2)])
             for pseudo1, pseudo2 in all_edges.keys()]
-        #print(all_edges)
-
-        return ['{{from: {}, to: {}, value: {}, title: "{} messages"}}'.format(pseudo1, pseudo2, weight, weight)
-            for pseudo1, pseudo2, weight in all_edges]
 
     @staticmethod
     def get_graph(edges):
         """Return a relation graph in dot format according to the given Edges.
+
+        ..Note: There is an autodetection of the use of NetworkX lib
 
         ..Note: The returned string could be displayed in Jinja,
             with 'text | safe' filter.
@@ -253,6 +265,15 @@ class Edge(Base, Item):
         :rtype: <str>
         """
 
+        # Without Networkx
+        if commons.USE_NETWORKX is not True:
+            print("NETWORKX FALSE")
+            return 'graph "" { ' + \
+            ' '.join(Edge.get_formatted_nodes(edges)) + \
+            ' '.join(Edge.get_formatted_edges(edges)) + \
+            '}'
+
+        # With Networkx
         # Counter of pseudos
         all_nodes = Edge.get_nodes(edges)
         # Counter of edges
