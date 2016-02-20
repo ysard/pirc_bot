@@ -11,6 +11,8 @@ import re
 from irc.bot import *
 # Tuto:
 # https://openclassrooms.com/courses/programmer-un-bot-irc-simplement-avec-ircbot
+# IRC events:
+# https://github.com/jaraco/irc/blob/08777757fa513b9d7443d07fa801c6e8dc9c97e4/irc/events.py
 
 # Custom imports
 from irc_bot import commons as cm
@@ -62,6 +64,12 @@ class IRCAnalytics(SingleServerIRCBot):
         # Join channel
         serv.join(cm.CHANNEL)
 
+    def on_whoisuser(self, serv, ev):
+        """Print server response to the command "serv.whois([author])"""
+
+        LOGGER.info("Host of <" + ev.arguments[0] + \
+                    "> is <" + ev.arguments[2] + ">")
+
     def on_pubmsg(self, serv, ev):
         """Called when a user posts a message"""
         author = ev.source.nick
@@ -71,10 +79,11 @@ class IRCAnalytics(SingleServerIRCBot):
                      author + "> : " + message)
 
         try:
+            # Raise an exception if message is not a relationship
             groups = self._expr_reg.match(message).groups()
             dest = groups[0]
 
-            # return on micro message
+            # Return on micro message
             if len(groups[1]) <= 3:
                 return
 
