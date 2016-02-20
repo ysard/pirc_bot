@@ -4,45 +4,48 @@ import logging
 from irc_bot import info
 from logging.handlers import RotatingFileHandler
 
-# directory paths
-DIR_LOGS                = 'logs/'
-DIR_DATA                = 'data/'
-DIR_WEBSITE             = 'irc_bot/website/'
-DIR_W_STATIC            = DIR_WEBSITE + 'static/'
-DIR_W_TEMPLATES         = DIR_WEBSITE + 'templates/'
+# Directory paths
+DIR_LOGS         = 'logs/'
+DIR_DATA         = 'data/'
+# Flask website files
+DIR_WEBSITE      = 'website_files/'
+DIR_W_STATIC     = DIR_WEBSITE + 'static'
+DIR_W_TEMPLATES  = DIR_WEBSITE + 'templates'
 
 # Import config:
 # Switch to True if you want to use Networkx.
 # PS: the import of this lib on Raspberry Pi is a real problem...
-USE_NETWORKX            = False
-
-# Logging
-LOGGER_NAME             = info.PACKAGE_NAME
-LOG_LEVEL               = logging.INFO
+USE_NETWORKX     = False
 
 # IRC parameters
-SERVER_URL = "irc.freenode.net"
-SERVER_PORT = 6667
-BOT_NAME = "pirc_bt"
-BOT_REALNAME = "pirc bot " + info.PACKAGE_VERSION + \
+SERVER_URL       = "irc.freenode.net"
+SERVER_PORT      = 6667
+BOT_NAME         = "pirc_b"
+BOT_REALNAME     = "pirc bot " + info.PACKAGE_VERSION + \
     " <http://pro-domo.ddns.net/pirc_bot>"
-BOT_MESSAGE = "#BIG Analytics " + info.PACKAGE_VERSION + \
+BOT_MESSAGE      = "#BIG Analytics " + info.PACKAGE_VERSION + \
     " - http://pro-domo.ddns.net/pirc_bot"
-CHANNEL = "#big_rennes"
+#CHANNEL          = "#big_rennes"
+CHANNEL          = "#big_test"
 
-# IRC events
+# Nginx prefix in prod environment
+# "/" string for NGINX_PREFIX on dev environment
+# "" string for STATIC_PREFIX on dev environment
+NGINX_PREFIX     = "/pirc_bot"
+STATIC_PREFIX    = NGINX_PREFIX
+#NGINX_PREFIX     = "/"
+#STATIC_PREFIX    = ""
+
+# Logging
+LOGGER_NAME      = info.PACKAGE_NAME
+LOG_LEVEL        = logging.INFO
+
+################################################################################
+# IRC events - DON'T TOUCH THAT !
 IRC_JOIN = 0
 IRC_QUIT = 1
 IRC_KICK = 2
 IRC_MSG  = 3
-
-# Nginx prefix in prod environment
-# "/" string for NGINX_PREFIX on dev environment (specified in __main__.py)
-# "" string for STATIC_PREFIX on dev environment
-NGINX_PREFIX = "/pirc_bot"
-STATIC_PREFIX = NGINX_PREFIX
-#NGINX_PREFIX = "/"
-#STATIC_PREFIX = ""
 ################################################################################
 
 def logger(name=LOGGER_NAME, logfilename=None):

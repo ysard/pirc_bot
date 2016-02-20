@@ -13,13 +13,10 @@ all:
 irc_start:
 	$(COMMAND) irc_bot_start
 
-#dev_flask_start:
-#	$(COMMAND) start_flask_dev
-
 dev_flask_start:
 	# 1 worker, bind localhost:4000
 	# Binding to nginx proxy
-	gunicorn --log-level=debug -w 1 -b 127.0.0.1:4000 irc_bot.irc_bot:app
+	gunicorn --log-level=debug -w 8 --threads 4 -b 127.0.0.1:4000 irc_bot.irc_bot:app
 
 prod_flask_start:
 	if [ -e $(SOCKET_FILE) ]; then sudo rm $(SOCKET_FILE); fi
