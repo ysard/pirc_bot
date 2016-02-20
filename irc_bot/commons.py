@@ -26,16 +26,16 @@ BOT_REALNAME     = "pirc bot " + info.PACKAGE_VERSION + \
     " <http://pro-domo.ddns.net/pirc_bot>"
 BOT_MESSAGE      = "#BIG Analytics " + info.PACKAGE_VERSION + \
     " - http://pro-domo.ddns.net/pirc_bot"
-#CHANNEL          = "#big_rennes"
-CHANNEL          = "#big_test"
+CHANNEL          = "#big_rennes"
+#CHANNEL          = "#big_test"
 
 # Nginx prefix in prod environment
 # "/" string for NGINX_PREFIX on dev environment
 # "" string for STATIC_PREFIX on dev environment
-#NGINX_PREFIX     = "/pirc_bot"
-#STATIC_PREFIX    = NGINX_PREFIX
-NGINX_PREFIX     = "/"
-STATIC_PREFIX    = ""
+NGINX_PREFIX     = "/pirc_bot"
+STATIC_PREFIX    = NGINX_PREFIX
+#NGINX_PREFIX     = "/"
+#STATIC_PREFIX    = ""
 
 # Disable real-time generation of graphs
 # A thread will be used to generate data,
