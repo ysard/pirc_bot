@@ -190,6 +190,25 @@ class Edge(Base, Item):
 
 
     @staticmethod
+    def delete_user(session, user):
+        """Delete all relationships where the given user is involved.
+
+        :param arg1: SQLAlchemy session.
+        :param arg2: The pseudo of the user to delete.
+        :type arg1: <SQL session object>
+        :type arg2: <str>
+        :return: Number of deleted edges.
+        :rtype: <int>
+
+        """
+        ret = session.query(Edge).filter(or_(Edge.pseudo1 == user,
+                                             Edge.pseudo2 == user)).delete()
+        session.commit()
+
+        LOGGER.debug(str(ret) + " relationships deleted")
+        return ret
+
+    @staticmethod
     def get_nodes(edges):
         """Return a Counter of all nodes (aka user's pseudonyms).
 
@@ -199,6 +218,7 @@ class Edge(Base, Item):
         :type: <list <Edge>>
         :return: Counter of pseudonyms.
         :rtype: <Counter <str> : <int>>
+
         """
 
         g = ((edge.pseudo1, edge.pseudo2) for edge in edges)
@@ -348,6 +368,24 @@ class Log(Base, Item):
             self.pseudo,
             self.event)
 
+
+    @staticmethod
+    def delete_user(session, user):
+        """Delete all logs where the given user is involved.
+
+        :param arg1: SQLAlchemy session.
+        :param arg2: The pseudo of the user to delete.
+        :type arg1: <SQL session object>
+        :type arg2: <str>
+        :return: Number of deleted logs.
+        :rtype: <int>
+
+        """
+        ret = session.query(Log).filter(Log.pseudo == user).delete()
+        session.commit()
+
+        LOGGER.debug(str(ret) + " messages deleted")
+        return ret
 
     @staticmethod
     def get_day_messages(session, previous=False):

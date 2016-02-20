@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 DIR_LOGS         = 'logs/'
 DIR_DATA         = 'data/'
 
-# Flask website files
+# Flask website paths
 DIR_WEBSITE      = 'website_files/'
 DIR_W_STATIC     = DIR_WEBSITE + 'static'
 DIR_W_TEMPLATES  = DIR_WEBSITE + 'templates'
@@ -26,8 +26,12 @@ BOT_REALNAME     = "pirc bot " + info.PACKAGE_VERSION + \
     " <http://pro-domo.ddns.net/pirc_bot>"
 BOT_MESSAGE      = "#BIG Analytics " + info.PACKAGE_VERSION + \
     " - http://pro-domo.ddns.net/pirc_bot"
-CHANNEL          = "#big_rennes"
-#CHANNEL          = "#big_test"
+#CHANNEL          = "#big_rennes"
+CHANNEL          = "#big_test"
+# During the import, variables are filled with pseudodyms in corresponding files
+ENABLE_USERS_WHITELIST = False
+USERS_WHITELIST  = DIR_DATA + "pseudos_whitelist.txt"
+ADMINS_LIST      = DIR_DATA + "admins.txt"
 
 # Nginx prefix in prod environment
 # "/" string for NGINX_PREFIX on dev environment
@@ -40,7 +44,7 @@ STATIC_PREFIX    = NGINX_PREFIX
 # Disable real-time generation of graphs
 # A thread will be used to generate data,
 # according to the following delay (in seconds)
-ENABLE_REALTIME  = True
+ENABLE_REALTIME  = False
 DELAY            = 30
 
 # Logging
@@ -53,6 +57,20 @@ IRC_JOIN = 0
 IRC_QUIT = 1
 IRC_KICK = 2
 IRC_MSG  = 3
+
+# IRC config loading
+def load_users(file):
+    """Return a list of users in the given text file"""
+    with open(file, 'r') as file:
+        return {line.strip() for line in file}
+
+def update_users():
+    """Refresh the whitelist file with the current whitelist"""
+    with open(DIR_DATA + "pseudos_whitelist.txt", 'w') as file:
+        [file.write(user + '\n') for user in USERS_WHITELIST]
+
+USERS_WHITELIST = load_users(USERS_WHITELIST)
+ADMINS_LIST = load_users(ADMINS_LIST)
 ################################################################################
 
 def logger(name=LOGGER_NAME, logfilename=None):

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project irc_bot -->
-<!-- Saved: 2016-02-16, 12:07:39 -->
+<!-- Saved: 2016-02-20, 17:24:43 -->
 <!-- Copyright (C) 2016 ,  -->
 <Project version="5.1">
   <Language></Language>
@@ -24,6 +24,7 @@
     <Source>irc_bot/irc_bot.py</Source>
     <Source>irc_bot/website/website.py</Source>
     <Source>irc_bot/website/__init__.py</Source>
+    <Source>irc_bot/data_caching.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
