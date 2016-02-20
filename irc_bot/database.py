@@ -5,7 +5,7 @@ The class Log is used to insert events in db.
 
 """
 # Custom imports
-from irc_bot import commons
+from irc_bot import commons as cm
 
 # Standard imports
 import datetime
@@ -15,7 +15,7 @@ from collections import Counter
 from operator import itemgetter
 import itertools as it
 # Don't import networkx if flag is False
-if commons.USE_NETWORKX:
+if cm.USE_NETWORKX:
     import networkx as nx
 
 # SQL Alchemy
@@ -24,7 +24,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-LOGGER = commons.logger()
+LOGGER = cm.logger()
 
 # /!\ initialization for SQL Alchemy Object Mapping
 # /!\ This line MUST BE before Profile class that inherits from it
@@ -85,7 +85,7 @@ def loading_sql(**kwargs):
     # Create an engine and create all the tables we need
 
     # Erase DB file if already exists
-    db_file = commons.DIR_DATA + 'bdd.sqlite'
+    db_file = cm.DIR_DATA + 'bdd.sqlite'
     db_exists = os.path.isfile(db_file)
 
     if kwargs.get('reuse', True) is False and db_exists:
@@ -266,8 +266,7 @@ class Edge(Base, Item):
         """
 
         # Without Networkx
-        if commons.USE_NETWORKX is not True:
-            print("NETWORKX FALSE")
+        if cm.USE_NETWORKX is not True:
             return 'graph "" { ' + \
             ' '.join(Edge.get_formatted_nodes(edges)) + \
             ' '.join(Edge.get_formatted_edges(edges)) + \
@@ -377,7 +376,7 @@ class Log(Base, Item):
 
         query = session.query(Log).filter(Log.timestamp >= d1,
                                           Log.timestamp < d2,
-                                          Log.event == commons.IRC_MSG)
+                                          Log.event == cm.IRC_MSG)
         results = [entity for entity in query]
 
         LOGGER.debug("Messages per day : " + str(len(results)))
@@ -407,7 +406,7 @@ class Log(Base, Item):
 
         query = session.query(Log).filter(Log.timestamp >= week_start,
                                           Log.timestamp < week_end,
-                                          Log.event == commons.IRC_MSG)
+                                          Log.event == cm.IRC_MSG)
         results = [entity for entity in query]
 
         LOGGER.debug("Messages per week : " + str(len(results)))
@@ -488,6 +487,45 @@ class Log(Base, Item):
             [all_messages_by_days[day]/nb_unique_days.get(day, 1) for day in range(0,7)]
 
         return all_messages_by_days
+
+
+def forge_data(session):
+    """This function forges data for the website.
+
+    It's used by Flask or DataCaching object to generate data.
+
+    :param: SQLAlchemy session.
+    :type: <SQL session object>
+    :return: Dictionary of all parameters used in the template.
+    :rtype: <dict>
+    """
+
+    prev_day_msgs  = Log.get_day_messages(session, previous=True)
+    prev_week_msgs = Log.get_week_messages(session, previous=True)
+    day_msgs       = Log.get_day_messages(session)
+    week_msgs      = Log.get_week_messages(session)
+    edges          = Edge.get_all(session)
+
+    return {
+        'nginx_prefix' : cm.STATIC_PREFIX,
+        'data_bar_day' : Log.get_top_posters(
+            day_msgs),
+        'data_bar_prev_day' : Log.get_top_posters(
+            prev_day_msgs),
+        'data_bar_week' : Log.get_top_posters(
+            week_msgs),
+        'data_line_prev_week' : Log.get_messages_per_hour(
+            prev_week_msgs),
+        'data_line_week' : Log.get_messages_per_hour(
+            week_msgs),
+        'data_line_prev_day' : Log.get_messages_per_hour(
+            prev_day_msgs),
+        'data_line_day' : Log.get_messages_per_hour(
+            day_msgs),
+        'data_average' : Log.get_average_msgs_per_day(
+            Log.get_all(session)),
+        'data_graph' : Edge.get_graph(edges)
+    }
 
 
 if __name__ == "__main__":

@@ -3,9 +3,12 @@
 This modules handles flask app and pass the data taken from database
 to the main webpage.
 
-Charts.js documentation:
+- Charts.js documentation:
 http://www.chartjs.org/docs
-
+- Highcharts.js documentation:
+http://api.highcharts.com/highcharts
+- Vis.js documentation:
+http://visjs.org/docs/network/
 """
 
 # Standard imports
@@ -30,6 +33,15 @@ app = Flask(__name__,
 # Initialize SQLAlchemy session (flask auto-removes the session later
 session = db.loading_sql()
 
+# Data caching
+if not cm.ENABLE_REALTIME:
+    from irc_bot.data_caching import DataCaching
+
+    # Pass the callable for database interrogation (have a look to database.py)
+    thread = DataCaching(session, db.forge_data)
+    thread.start()
+
+
 @app.route(cm.NGINX_PREFIX)
 def index():
     """Main page with graphs.
@@ -43,34 +55,12 @@ def index():
 
     """
 
-    prev_day_msgs  = db.Log.get_day_messages(session, previous=True)
-    prev_week_msgs = db.Log.get_week_messages(session, previous=True)
-    day_msgs       = db.Log.get_day_messages(session)
-    week_msgs      = db.Log.get_week_messages(session)
-    edges          = db.Edge.get_all(session)
+    # Data caching
+    if not cm.ENABLE_REALTIME:
+        return render_template('index.html', **thread.data)
 
-    params = {
-        'nginx_prefix' : cm.STATIC_PREFIX,
-        'data_bar_day' : db.Log.get_top_posters(
-            day_msgs),
-        'data_bar_prev_day' : db.Log.get_top_posters(
-            prev_day_msgs),
-        'data_bar_week' : db.Log.get_top_posters(
-            week_msgs),
-        'data_line_prev_week' : db.Log.get_messages_per_hour(
-            prev_week_msgs),
-        'data_line_week' : db.Log.get_messages_per_hour(
-            week_msgs),
-        'data_line_prev_day' : db.Log.get_messages_per_hour(
-            prev_day_msgs),
-        'data_line_day' : db.Log.get_messages_per_hour(
-            day_msgs),
-        'data_average' : db.Log.get_average_msgs_per_day(
-            db.Log.get_all(session)),
-        'data_graph' : db.Edge.get_graph(edges)
-    }
-
-    return render_template('index.html', **params)
+    # With data caching: realtime
+    return render_template('index.html', **db.forge_data(session))
 
 
 @app.teardown_appcontext
@@ -85,8 +75,8 @@ def shutdown_session(exception=None):
 
 
 def main():
-    app.run(debug=True)
 
+    app.run()
 
 if __name__ == "__main__":
 

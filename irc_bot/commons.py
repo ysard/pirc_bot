@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 # Directory paths
 DIR_LOGS         = 'logs/'
 DIR_DATA         = 'data/'
+
 # Flask website files
 DIR_WEBSITE      = 'website_files/'
 DIR_W_STATIC     = DIR_WEBSITE + 'static'
@@ -31,10 +32,16 @@ CHANNEL          = "#big_test"
 # Nginx prefix in prod environment
 # "/" string for NGINX_PREFIX on dev environment
 # "" string for STATIC_PREFIX on dev environment
-NGINX_PREFIX     = "/pirc_bot"
-STATIC_PREFIX    = NGINX_PREFIX
-#NGINX_PREFIX     = "/"
-#STATIC_PREFIX    = ""
+#NGINX_PREFIX     = "/pirc_bot"
+#STATIC_PREFIX    = NGINX_PREFIX
+NGINX_PREFIX     = "/"
+STATIC_PREFIX    = ""
+
+# Disable real-time generation of graphs
+# A thread will be used to generate data,
+# according to the following delay (in seconds)
+ENABLE_REALTIME  = True
+DELAY            = 30
 
 # Logging
 LOGGER_NAME      = info.PACKAGE_NAME
