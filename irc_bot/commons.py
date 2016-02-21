@@ -26,12 +26,13 @@ BOT_REALNAME     = "pirc bot " + info.PACKAGE_VERSION + \
     " <http://pro-domo.ddns.net/pirc_bot>"
 BOT_MESSAGE      = "#BIG Analytics " + info.PACKAGE_VERSION + \
     " - http://pro-domo.ddns.net/pirc_bot"
-#CHANNEL          = "#big_rennes"
-CHANNEL          = "#big_test"
+CHANNEL          = "#big_rennes"
+#CHANNEL          = "#big_test"
 # During the import, variables are filled with pseudodyms in corresponding files
 ENABLE_USERS_WHITELIST = False
 USERS_WHITELIST  = DIR_DATA + "pseudos_whitelist.txt"
 ADMINS_LIST      = DIR_DATA + "admins.txt"
+ADMINS_HOSTS_REG = ''
 
 # Nginx prefix in prod environment
 # "/" string for NGINX_PREFIX on dev environment
@@ -45,7 +46,7 @@ STATIC_PREFIX    = NGINX_PREFIX
 # A thread will be used to generate data,
 # according to the following delay (in seconds)
 ENABLE_REALTIME  = False
-DELAY            = 30
+DELAY            = 40
 
 # Logging
 LOGGER_NAME      = info.PACKAGE_NAME

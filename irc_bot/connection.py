@@ -64,7 +64,9 @@ class IRCAnalytics(SingleServerIRCBot):
         # Init regex for names in conversation
         self._expr_reg = re.compile('^(\w*): (.*)$')
         # Init regex for admin commands
-        self._admin_reg = re.compile('^(?P<command>3[\d]{1})( (?P<param>.*))?$')
+#        self._admin_reg = re.compile('^(?P<command>3[\d]{1})( (?P<param>.*))?$')
+        # Init regex for admin hosts
+        self._admins_hosts = re.compile(cm.ADMINS_HOSTS_REG)
         # All admin functions
         self._admin_functions = {'31' : self.enable_whitelist,
                                  '32' : self.user_add,
@@ -103,6 +105,37 @@ class IRCAnalytics(SingleServerIRCBot):
         LOGGER.info("Host of <" + ev.arguments[0] + \
                     "> is <" + ev.arguments[2] + ">")
 
+    def on_ctcp(self, serv, ev):
+        """Handle Client-To-Client (admin) commands.
+
+        ..Note: /ctcp <botname>
+        ..Note: Server receives in ev.arguments: ['32', 'user_test']
+        """
+
+        # Verification of admin rights
+        if (ev.source.nick not in cm.ADMINS_LIST) or \
+           (self._admins_hosts.match(ev.source) is None):
+            return
+
+        #Handle admin commands
+        LOGGER.info("<" + ev.source.nick + "> is an admin")
+
+        # If there is no/bad command or no parameter => an exception is raised
+        # (because of access to a bad index in list ev.arguments)
+        if len(ev.arguments) == 0:
+            return
+
+        try:
+            # Find the correct function according to the command code
+            # See the constructor for the mapping code <=> function
+            func = self._admin_functions[ev.arguments[0]]
+            # If the code is not unknown we call the function
+            func(serv, ev.arguments[1])
+        except:
+            # Some func may accept None (a decorator will filter the call)
+            func(serv, None)
+            pass
+
     def on_pubmsg(self, serv, ev):
         """Called when a user posts a message"""
         author = ev.source.nick
@@ -116,7 +149,6 @@ class IRCAnalytics(SingleServerIRCBot):
         LOGGER.info(self.get_current_date() + " - <" + \
                      author + "> : " + message)
 
-        serv.whois([author])
         # Detection of relationships
         try:
             # Raise an exception if message is not a relationship
@@ -213,7 +245,7 @@ class IRCAnalytics(SingleServerIRCBot):
         This function can handle admin commands and help questions.
 
         """
-        match_admin = self._admin_reg.match(message)
+#        match_admin = self._admin_reg.match(message)
 
         if message == 'help' or message == '1':
             """Send help"""
@@ -238,19 +270,19 @@ class IRCAnalytics(SingleServerIRCBot):
                 " - Graph of relationships: http://pro-domo.ddns.net/pirc_bot#mynetwork")
             return
 
-        elif (match_admin is not None) and (author in cm.ADMINS_LIST):
-            """Handle admin commands"""
-            LOGGER.debug("<" + author + "> is an admin")
-
-            # Find the correct function according to the command code
-            # See the constructor for the mapping code <=> function
-            func = self._admin_functions[
-                    match_admin.groupdict().get('command', None)
-            ]
-            # If the code is not unknown we call the function
-            if func is not None:
-                func(serv,
-                     match_admin.groupdict().get('param', None))
+#        elif (match_admin is not None) and (author in cm.ADMINS_LIST):
+#            """Handle admin commands"""
+#            LOGGER.debug("<" + author + "> is an admin")
+#
+#            # Find the correct function according to the command code
+#            # See the constructor for the mapping code <=> function
+#            func = self._admin_functions[
+#                    match_admin.groupdict().get('command', None)
+#            ]
+#            # If the code is not unknown we call the function
+#            if func is not None:
+#                func(serv,
+#                     match_admin.groupdict().get('param', None))
 
     @param_not_none
     def enable_whitelist(self, serv, param):
@@ -273,7 +305,7 @@ class IRCAnalytics(SingleServerIRCBot):
         """
         cm.USERS_WHITELIST.add(param)
         cm.update_users()
-        serv.action(cm.CHANNEL, "User is now authorized.")
+        serv.action(cm.CHANNEL, "User <" + param + "> is now authorized.")
         LOGGER.info("ADMIN: User add: <" + param + ">")
 
     @param_not_none
@@ -288,7 +320,7 @@ class IRCAnalytics(SingleServerIRCBot):
             cm.update_users()
         except KeyError:
             pass
-        serv.action(cm.CHANNEL, "User is banned.")
+        serv.action(cm.CHANNEL, "User <" + param + "> is banned.")
         LOGGER.info("ADMIN: User remove: <" + param + ">")
 
     @param_not_none
@@ -298,7 +330,9 @@ class IRCAnalytics(SingleServerIRCBot):
         ..Note: Command is <bot name>: 34 <user>
         """
         number = db.Log.delete_user(self._db_session, param)
-        serv.action(cm.CHANNEL, str(number) + " deleted logs. Have a nice day.")
+        serv.action(cm.CHANNEL,
+                    str(number) + " deleted logs for <" + param + \
+                    ">. Have a nice day.")
         LOGGER.info("ADMIN: Remove logs: <" + param + ">")
 
     @param_not_none
@@ -308,7 +342,9 @@ class IRCAnalytics(SingleServerIRCBot):
         ..Note: Command is <bot name>: 35 <user>
         """
         number = db.Edge.delete_user(self._db_session, param)
-        serv.action(cm.CHANNEL, str(number) + " deleted edges. Have a nice day.")
+        serv.action(cm.CHANNEL,
+                    str(number) + " deleted edges for <" + param + \
+                    ">  Have a nice day.")
         LOGGER.info("ADMIN: Remove relations: <" + param + ">")
 
     @param_not_none
