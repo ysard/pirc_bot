@@ -9,8 +9,8 @@ You will find [Flask](http://flask.pocoo.org/) as a Python microframework based 
 The project is powered by [Gunicorn](http://docs.gunicorn.org/en/stable/index.html) project as a Python
 WSGI HTTP Server for Unix systems; and by [Nginx](http://nginx.org/) as a proxy with powerful caching features.
 
-![Website screenshot](./pirc_bot1.png)
-![Website screenshot](./pirc_bot2.png)
+<img alt="Website screenshot" src="./pirc_bot1.png" width="600" />
+<img alt="Website screenshot" src="./pirc_bot1.png" width="600" />
 
 # Installation
 
