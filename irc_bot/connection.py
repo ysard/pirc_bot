@@ -220,6 +220,10 @@ class IRCAnalytics(SingleServerIRCBot):
         # Insert in database
         self.insert_in_database(author, cm.IRC_QUIT)
 
+    def on_quit(self, serv, ev):
+        """Called when a user leaves the server. Same as on_part event."""
+        self.on_part(serv, ev)
+
     def on_kick(self, serv, ev):
         """Called when a user was kicked by another"""
         author = ev.source.nick
