@@ -438,9 +438,12 @@ class Log(Base, Item):
         if previous == True:
             d1 = d1 - datetime.timedelta(days=7) # sub 7 days
 
+
         # Current week
         week_start = d1 - datetime.timedelta(days=d1.weekday())
-        week_end = week_start + datetime.timedelta(days=6)
+        week_end = week_start + datetime.timedelta(days=7)
+        LOGGER.debug("week_start: " + str(week_start))
+        LOGGER.debug("week_end: " + str(week_end))
 
         query = session.query(Log).filter(Log.timestamp >= week_start,
                                           Log.timestamp < week_end,
