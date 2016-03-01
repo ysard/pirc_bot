@@ -405,12 +405,12 @@ class Log(Base, Item):
 
         # Is starting day the current or previous day ?
         if previous == True:
-            d1 = d1.replace(day=d1.day - 1)
+            d1 = d1 - datetime.timedelta(days=1)
 
 #        d1 = datetime.datetime.today()
 
-        # En of today
-        d2 = d1.replace(day=d1.day + 1)
+        # End of today
+        d2 = d1 + datetime.timedelta(days=1)
 
         query = session.query(Log).filter(Log.timestamp >= d1,
                                           Log.timestamp < d2,
@@ -436,7 +436,7 @@ class Log(Base, Item):
 
         # Is starting day the current or the day of the last week ?
         if previous == True:
-            d1 = d1.replace(day=d1.day - 7) # sub 7 days
+            d1 = d1 - datetime.timedelta(days=7) # sub 7 days
 
         # Current week
         week_start = d1 - datetime.timedelta(days=d1.weekday())
