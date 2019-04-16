@@ -1,7 +1,7 @@
 decorator==4.0.9
-Flask==0.10.1
+Flask~>0.12.3
 graphviz==0.4.10
-gunicorn==19.4.5
+gunicorn==19.5.0
 inflect==0.2.5
 irc==13.3.1
 itsdangerous==0.24
