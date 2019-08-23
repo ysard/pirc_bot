@@ -60,10 +60,16 @@ for the load-balancing configuration.
             proxy_redirect     off;
 
             # Filter static files (may be redondant with location '/pirc_bot/static/'
-            if (!-f $request_filename) {
-                proxy_pass http://flask_server;
-                break;
-            }
+            # https://www.nginx.com/resources/admin-guide/serving-static-content/
+            #if (!-f $request_filename) {
+            #    proxy_pass http://flask_server;
+            #    break;
+            #}
+            try_files $uri $uri/ @backend;
+        }
+
+        location @backend {
+            proxy_pass http://flask_server;
         }
     }
     upstream flask_server {
