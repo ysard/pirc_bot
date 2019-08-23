@@ -34,13 +34,10 @@ USERS_WHITELIST  = DIR_DATA + "pseudos_whitelist.txt"
 ADMINS_LIST      = DIR_DATA + "admins.txt"
 ADMINS_HOSTS_REG = ''
 
-# Nginx prefix in prod environment
-# "/" string for NGINX_PREFIX on dev environment
-# "" string for STATIC_PREFIX on dev environment
+# Nginx prefix
 NGINX_PREFIX     = "/pirc_bot"
-STATIC_PREFIX    = NGINX_PREFIX
-#NGINX_PREFIX     = "/"
-#STATIC_PREFIX    = ""
+# Don't touch that (it's the prefix of static files from web user point of view)
+STATIC_PREFIX   = NGINX_PREFIX + '/static'
 
 # Disable real-time generation of graphs
 # A thread will be used to generate data,

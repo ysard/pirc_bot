@@ -28,6 +28,7 @@ LOGGER = cm.logger()
 #Defaults to the 'static' folder in the root path of the application.
 
 app = Flask(__name__,
+			static_url_path=cm.STATIC_PREFIX,
             static_folder='../../' + cm.DIR_W_STATIC,
             template_folder='../../' + cm.DIR_W_TEMPLATES)
 # Initialize SQLAlchemy session (flask auto-removes the session later

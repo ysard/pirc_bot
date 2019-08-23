@@ -156,20 +156,11 @@ These files will be loaded along with the bot.
 
 ## Nginx prefix
 
-On dev environment specify these settings:
+Don't forget to synchronize these settings with Nginx config
+(it's the prefix on your server through which users will consult the page).
 
-* "/" string for NGINX_PREFIX
-* "" string for STATIC_PREFIX
+    NGINX_PREFIX     = "/pirc_bot"
 
-On prod environment don't forget to synchronize these settings with
-Nginx config.
-
-    # Prod
-    #NGINX_PREFIX     = "/pirc_bot"
-    #STATIC_PREFIX    = NGINX_PREFIX
-    # Dev
-    NGINX_PREFIX     = "/"
-    STATIC_PREFIX    = ""
 
 ## Data caching
 
