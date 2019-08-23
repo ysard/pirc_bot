@@ -25,9 +25,10 @@ systd_prod_flask_restart:
 
 install:
 	sudo cp $(SERVICE_NAME) /etc/systemd/system/
-	sudo sed -i -e 's#/project/directory#$(ROOT_DIR)#g' /etc/systemd/system/pircbot.service
+	sudo sed -i -e 's#/project/directory#$(ROOT_DIR)#g' /etc/systemd/system/$(SERVICE_NAME)
 	sudo chmod a+x /etc/systemd/system/$(SERVICE_NAME)
 	sudo systemctl daemon-reload
+	sudo mkdir /var/log/pircbot
 
 version:
 	$(COMMAND) --version
